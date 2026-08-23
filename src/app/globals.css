@@ -17,6 +17,21 @@ body {
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* Reserve the vertical scrollbar's space on every page, whether or not that page's
+   content is tall enough to need one. Without this, navigating between a page that
+   needs a scrollbar and one that doesn't changes the available content width by the
+   scrollbar's width, which visibly shifts any horizontally-centered (mx-auto) content
+   sideways on every such navigation. */
+/* Always reserve the vertical scrollbar's track, whether or not the current page's
+   content is tall enough to need it. Without this, navigating between a page that
+   needs a scrollbar and one that doesn't changes the available content width by the
+   scrollbar's width, which visibly shifts any horizontally-centered (mx-auto) content
+   sideways. scrollbar-gutter is unreliable on the root <html> element across engines,
+   so this uses the older, universally-supported overflow-y: scroll instead. */
+html {
+  overflow-y: scroll;
+}
+
 /* Terminal scrollbars — square corners everywhere */
 * {
   scrollbar-width: thin;

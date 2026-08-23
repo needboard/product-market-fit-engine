@@ -61,10 +61,24 @@ export default function AmbientCanvas() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
+    // Setting canvas.width/height (even to a value close to the current one) wipes the
+    // canvas instantly. A vertical scrollbar appearing/disappearing between routes of
+    // different page heights changes window.innerWidth by its own width and fires a real
+    // 'resize' event, which used to blank the canvas for a frame — visible as a flicker
+    // when navigating between a "tall" page and a "short" one. Debouncing coalesces any
+    // burst of resize events into one, and redrawing synchronously right after resizing
+    // (instead of waiting for the next animation frame) means the cleared canvas is never
+    // actually painted to the screen on its own.
+    let resizeTimeout: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (!canvas) return;
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        cancelAnimationFrame(animationFrameId);
+        draw();
+      }, 100);
     };
     window.addEventListener('resize', handleResize);
 
@@ -311,6 +325,7 @@ export default function AmbientCanvas() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       mediaQuery.removeEventListener('change', handleMotionChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
