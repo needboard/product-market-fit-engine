@@ -23,7 +23,7 @@ export default function CanonicalBlock({ cluster }: { cluster: Cluster }) {
         <SectionBadge
           icon={Users}
           index="00"
-          label={`${APP_COPY.clusterDetail.matchHeader} (${cluster.memberCount} Reports)`}
+          label={APP_COPY.clusterDetail.matchHeader}
           accent="coral"
         />
       </div>
