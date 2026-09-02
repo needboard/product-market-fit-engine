@@ -5,7 +5,7 @@
  */
 export const HOMEPAGE_COPY = {
   hero: {
-    badge: "00 // WHERE REAL PROBLEMS MEET REAL BUILDERS",
+    badge: "Where real problems meet real builders",
     title: "Stop guessing what to build. Start building what people are already asking for.",
     subtitle: "A public marketplace of real problems reported by developers and teams. Builders come here to see exactly what's broken — and who's waiting for a fix.",
     ctaValidate: "Report a Problem",
@@ -25,7 +25,7 @@ export const HOMEPAGE_COPY = {
     list: [
       {
         id: "explore",
-        badge: "FIND YOUR PROBLEM, INSTANTLY",
+        badge: "Find your problem, instantly",
         title: "Search by Meaning, Not Just Words",
         desc: "Describe your frustration in plain words — NeedBoard matches by meaning, not exact phrasing, so scattered duplicates become one clear signal.",
         interactiveTitle: "How Search Will Work",
@@ -35,7 +35,7 @@ export const HOMEPAGE_COPY = {
       },
       {
         id: "submit",
-        badge: "REPORT IT IN SECONDS",
+        badge: "Report it in seconds",
         title: "Turn Your Frustration Into an Opportunity",
         desc: "Tell us what's broken in plain language. If others hit the same wall, your report strengthens an existing problem — otherwise, you've just created a new one.",
         interactiveTitle: "Log Frustration Lifecycle",
@@ -47,7 +47,7 @@ export const HOMEPAGE_COPY = {
       },
       {
         id: "curate",
-        badge: "THE BEST SOLUTIONS RISE TO THE TOP",
+        badge: "The best solutions rise to the top",
         title: "Real Users Decide What's Actually Good",
         desc: "Once solutions are listed, the community takes over — upvotes, downvotes, and honest reviews from people who've actually used them.",
         interactiveTitle: "How Voting Will Work",

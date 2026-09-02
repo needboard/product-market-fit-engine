@@ -15,20 +15,18 @@ export default function AboutSection() {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="w-full max-w-5xl"
     >
-      <Panel accent="amber" className="p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row gap-8 items-center justify-between">
-        <div className="absolute top-0 left-0 w-32 h-32 bg-signal-amber/5 rounded-full blur-2xl pointer-events-none" />
-
+      <Panel accent="amber" className="p-8 sm:p-12 flex flex-col md:flex-row gap-8 items-center justify-between">
         <div className="space-y-3 md:max-w-xs shrink-0 text-center md:text-left">
           <SectionBadge icon={Info} index="01" label="ABOUT THE PLATFORM" accent="amber" className="justify-center md:justify-start" />
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-ink">
+          <h2 className="text-2xl sm:text-3xl font-serif font-semibold text-ink">
             {HOMEPAGE_COPY.about.title}
           </h2>
-          <p className="text-xs text-ink-muted font-mono tracking-wide leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             {HOMEPAGE_COPY.about.subtitle}
           </p>
         </div>
 
-        <p className="text-ink-muted text-sm leading-relaxed max-w-xl font-sans text-center md:text-left border-t md:border-t-0 md:border-l border-[color:var(--raw-border-subtle)] pt-6 md:pt-0 md:pl-8">
+        <p className="text-ink-muted text-sm leading-relaxed max-w-xl font-sans text-center md:text-left border-t md:border-t-0 md:border-l border-border pt-6 md:pt-0 md:pl-8">
           {HOMEPAGE_COPY.about.description}
         </p>
       </Panel>

@@ -55,71 +55,71 @@ export default function PerksAndPortfolio({ profile, perks, onProfileUpdate }: P
   return (
     <div className="space-y-6 lg:sticky lg:top-8">
       <Panel accent="teal" className="p-6 space-y-4">
-        <div className="border-b border-[color:var(--raw-border-subtle)] pb-3">
+        <div className="border-b border-border pb-3">
           <SectionBadge icon={Zap} index="01" label="Dynamic Role Benefits" accent="amber" />
         </div>
 
         <ul className="space-y-3.5 text-xs text-ink-muted">
           {perks.perksHighlights.map((perk, idx) => (
-            <li key={idx} className="flex gap-2.5 leading-relaxed font-sans">
-              <CheckCircle className="h-4 w-4 text-signal-teal shrink-0 mt-0.5" />
+            <li key={idx} className="flex gap-2.5 leading-relaxed">
+              <CheckCircle className="h-4 w-4 text-status-matched shrink-0 mt-0.5" />
               <span>{perk}</span>
             </li>
           ))}
         </ul>
 
-        <div className="pt-3 border-t border-[color:var(--raw-border-subtle)] flex flex-col gap-2 font-mono text-[10px] text-ink-muted">
+        <div className="pt-3 border-t border-border flex flex-col gap-2 text-xs text-ink-muted">
           <div className="flex justify-between">
             <span>Speed limits (Minute):</span>
-            <strong className="text-ink-muted font-semibold">{perks.rateLimitPerMin} req / min</strong>
+            <strong className="font-mono text-ink font-semibold">{perks.rateLimitPerMin} req / min</strong>
           </div>
           <div className="flex justify-between">
             <span>Validation limits (Daily):</span>
-            <strong className="text-ink-muted font-semibold">{perks.rateLimitPerDay} req / day</strong>
+            <strong className="font-mono text-ink font-semibold">{perks.rateLimitPerDay} req / day</strong>
           </div>
         </div>
       </Panel>
 
-      <div className="relative overflow-hidden border border-[color:var(--raw-border-subtle)]">
+      <div className="relative overflow-hidden rounded-xl border border-border">
         {!perks.customLinksEnabled && (
-          <div className="absolute inset-0 bg-bg-void/70 backdrop-blur-md z-10 flex flex-col items-center justify-center p-6 text-center select-none space-y-4">
-            <div className="p-3 bg-signal-amber/10 border border-signal-amber/35 rounded-full text-brand-amber">
-              <Lock className="h-5 w-5 animate-pulse" />
+          <div className="absolute inset-0 bg-bg-panel/95 z-10 flex flex-col items-center justify-center p-6 text-center select-none space-y-4">
+            <div className="p-3 bg-accent/10 border border-accent/30 rounded-full text-accent">
+              <Lock className="h-5 w-5" />
             </div>
             <div>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-ink">Portfolio Features Locked</h4>
-              <p className="text-[10px] text-ink-muted leading-normal leading-relaxed mt-2 max-w-[210px] mx-auto">
+              <h4 className="text-sm font-semibold text-ink">Portfolio Features Locked</h4>
+              <p className="text-xs text-ink-muted leading-relaxed mt-2 max-w-[210px] mx-auto">
                 Submit your first verified product solution to promote your account, unlock 6x faster speed, and edit your custom founder card!
               </p>
             </div>
             <Link
               href="/browse"
-              className="inline-flex h-8 px-4 items-center justify-center font-mono text-[9px] uppercase tracking-widest font-bold bg-signal-amber hover:opacity-90 text-slate-950 rounded-lg"
+              className="inline-flex h-8 px-4 items-center justify-center text-xs font-semibold bg-accent hover:opacity-90 text-white rounded-lg"
             >
               Scan Problems & Solve
             </Link>
           </div>
         )}
 
-        <form onSubmit={handleSaveProfile} className="p-6 bg-bg-panel/20 space-y-4">
-          <div className="border-b border-[color:var(--raw-border-subtle)] pb-3">
+        <form onSubmit={handleSaveProfile} className="p-6 bg-bg-panel space-y-4">
+          <div className="border-b border-border pb-3">
             <SectionBadge icon={Award} index="02" label="Builder Profile Customizer" accent="teal" />
           </div>
 
           <div className="space-y-1">
-            <label className="font-mono text-[9px] text-ink-muted tracking-wider block uppercase font-bold">
+            <label className="text-xs text-ink-muted block font-medium">
               Founder bio tagline (160 Chars)
             </label>
             <textarea
               value={bioInput}
               onChange={(e) => setBioInput(e.target.value.substring(0, 160))}
               placeholder="e.g. Building micro-SaaS developer tooling since 2021. Founder of Webpack TurboLoader."
-              className="input-terminal input-terminal-teal w-full p-3 text-xs resize-none h-20"
+              className="input-field w-full p-3 text-sm resize-none h-20"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="font-mono text-[9px] text-ink-muted tracking-wider block uppercase font-bold flex items-center gap-1">
+            <label className="text-xs text-ink-muted block font-medium flex items-center gap-1">
               <GithubIcon className="h-3 w-3" /> GitHub URL
             </label>
             <input
@@ -127,12 +127,12 @@ export default function PerksAndPortfolio({ profile, perks, onProfileUpdate }: P
               value={githubInput}
               onChange={(e) => setGithubInput(e.target.value)}
               placeholder="github.com/your-username"
-              className="input-terminal input-terminal-teal w-full px-3 py-2 text-xs"
+              className="input-field w-full px-3 py-2 text-sm"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="font-mono text-[9px] text-ink-muted tracking-wider block uppercase font-bold flex items-center gap-1">
+            <label className="text-xs text-ink-muted block font-medium flex items-center gap-1">
               <Globe className="h-3 w-3" /> Personal / Agency website URL
             </label>
             <input
@@ -140,14 +140,14 @@ export default function PerksAndPortfolio({ profile, perks, onProfileUpdate }: P
               value={websiteInput}
               onChange={(e) => setWebsiteInput(e.target.value)}
               placeholder="https://your-agency.io"
-              className="input-terminal input-terminal-teal w-full px-3 py-2 text-xs"
+              className="input-field w-full px-3 py-2 text-sm"
             />
           </div>
 
           <button
             type="submit"
             disabled={savingProfile}
-            className="w-full h-9 bg-teal-400 text-slate-950 font-mono text-[9px] uppercase tracking-widest font-bold rounded-lg hover:bg-teal-300 transition-colors disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1"
+            className="w-full h-9 bg-status-matched text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-30 cursor-pointer flex items-center justify-center gap-1"
           >
             {savingProfile ? (
               <>

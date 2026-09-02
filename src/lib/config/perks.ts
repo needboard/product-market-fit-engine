@@ -22,7 +22,7 @@ export const ROLE_PERKS_CONFIG: Record<string, RolePerks> = {
   reporter: {
     role: 'reporter',
     label: 'Community Reporter',
-    badgeColor: 'text-signal-amber bg-signal-amber/10 border-signal-amber/20',
+    badgeColor: 'text-accent bg-accent/10 border-accent/20',
     rateLimitPerMin: 5,         // Safe rate limiting for general users
     rateLimitPerDay: 50,        // Safe daily limit
     canListSolutions: false,    // Must first list a product to trigger promotion loop
@@ -42,7 +42,7 @@ export const ROLE_PERKS_CONFIG: Record<string, RolePerks> = {
   builder: {
     role: 'builder',
     label: 'Verified Builder',
-    badgeColor: 'text-teal-400 bg-teal-500/10 border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.1)]',
+    badgeColor: 'text-status-matched bg-status-matched/10 border-status-matched/20',
     rateLimitPerMin: 30,        // 🌟 6x higher minute rate limit!
     rateLimitPerDay: 500,       // 🌟 10x higher daily request limit!
     canListSolutions: true,
@@ -62,7 +62,7 @@ export const ROLE_PERKS_CONFIG: Record<string, RolePerks> = {
   admin: {
     role: 'admin',
     label: 'System Operations Admin',
-    badgeColor: 'text-red-500 bg-red-500/10 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.15)]',
+    badgeColor: 'text-danger bg-danger/10 border-danger/20',
     rateLimitPerMin: 120,       // Maximum speed for system administration
     rateLimitPerDay: 5000,      // Max daily request capacity
     canListSolutions: true,

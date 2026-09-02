@@ -74,7 +74,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
     <AnimatePresence>
       <div className="fixed inset-0 z-[2147483646] flex items-center justify-center p-4">
         <motion.div
-          className="absolute inset-0 bg-bg-void/80 backdrop-blur-md"
+          className="absolute inset-0 bg-ink/40"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -82,14 +82,15 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
         />
 
         <motion.div
-          className="relative bg-bg-panel max-w-lg w-full p-6 sm:p-8 shadow-2xl overflow-hidden text-left hud-corners-coral"
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          className="relative panel-surface rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-xl overflow-hidden text-left"
+          initial={{ opacity: 0, scale: 0.96, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          exit={{ opacity: 0, scale: 0.96, y: 8 }}
+          transition={{ type: 'spring', stiffness: 450, damping: 28 }}
         >
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
+            className="absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink rounded-lg hover:bg-ink/5 cursor-pointer transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -102,13 +103,13 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="mx-auto w-12 h-12 bg-teal-500/25 border border-teal-500/50 rounded-full flex items-center justify-center text-signal-teal mb-4 animate-bounce">
+                <div className="mx-auto w-12 h-12 bg-status-solved/10 border border-status-solved/30 rounded-full flex items-center justify-center text-status-solved mb-4">
                   <Check className="h-6 w-6" />
                 </div>
-                <h2 className="text-xl font-bold font-sans text-ink">
+                <h2 className="text-xl font-semibold font-serif text-ink">
                   {isEditing ? "Solution Updated Successfully!" : APP_COPY.solutions.successHeader}
                 </h2>
-                <p className="text-xs text-ink-muted leading-relaxed font-sans max-w-sm mx-auto">
+                <p className="text-sm text-ink-muted leading-relaxed max-w-sm mx-auto">
                   {isEditing
                     ? "Your product listing updates have been published and are active immediately."
                     : APP_COPY.solutions.successDesc}
@@ -116,7 +117,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 <button
                   type="button"
                   onClick={onClose}
-                  className="mt-6 font-mono text-xs uppercase font-bold bg-white/10 hover:bg-white/15 text-ink border border-[color:var(--raw-border-subtle)] px-6 py-2.5 rounded-xl transition-all cursor-pointer"
+                  className="mt-6 text-sm font-medium bg-ink/5 hover:bg-ink/10 text-ink border border-border px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
                 >
                   Close Window
                 </button>
@@ -130,10 +131,10 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 animate={{ opacity: 1 }}
               >
                 <div>
-                  <h3 className="text-lg font-bold text-ink font-sans">
+                  <h3 className="text-lg font-semibold text-ink font-serif">
                     {isEditing ? "Update Your Solution Listing" : APP_COPY.solutions.formTitle}
                   </h3>
-                  <p className="text-xs text-ink-muted mt-1 font-sans leading-relaxed">
+                  <p className="text-sm text-ink-muted mt-1 leading-relaxed">
                     {isEditing
                       ? "Modify your listed link, icon, and problem-solving description to match your product's latest features."
                       : APP_COPY.solutions.formSubtitle}
@@ -141,7 +142,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold">
+                  <label className="text-xs text-ink-muted tracking-wide block font-medium">
                     {APP_COPY.solutions.productNameLabel}
                   </label>
                   <input
@@ -149,13 +150,13 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                     value={solName}
                     onChange={(e) => setSolName(e.target.value)}
                     placeholder={APP_COPY.solutions.productNamePlaceholder}
-                    className="input-terminal w-full px-4 py-2.5 text-xs select-text"
+                    className="input-field w-full px-4 py-2.5 text-sm select-text"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold">
+                  <label className="text-xs text-ink-muted tracking-wide block font-medium">
                     {APP_COPY.solutions.productUrlLabel}
                   </label>
                   <input
@@ -163,54 +164,54 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                     value={solUrl}
                     onChange={(e) => setSolUrl(e.target.value)}
                     placeholder={APP_COPY.solutions.productUrlPlaceholder}
-                    className="input-terminal w-full px-4 py-2.5 text-xs select-text"
+                    className="input-field w-full px-4 py-2.5 text-sm select-text"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold flex justify-between">
+                  <label className="text-xs text-ink-muted tracking-wide block font-medium flex justify-between">
                     <span>Product Icon Logo URL</span>
-                    <span className="text-[9px] text-ink-muted font-normal lowercase normal-case">Optional</span>
+                    <span className="text-ink-muted font-normal">Optional</span>
                   </label>
                   <input
                     type="url"
                     value={solIconUrl}
                     onChange={(e) => setSolIconUrl(e.target.value)}
                     placeholder="e.g., https://my-app.com/logo.png"
-                    className="input-terminal w-full px-4 py-2.5 text-xs select-text"
+                    className="input-field w-full px-4 py-2.5 text-sm select-text"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold">
+                  <label className="text-xs text-ink-muted tracking-wide block font-medium">
                     {APP_COPY.solutions.descriptionLabel}
                   </label>
                   <textarea
                     value={solDesc}
                     onChange={(e) => setSolDesc(e.target.value)}
                     placeholder={APP_COPY.solutions.descriptionPlaceholder}
-                    className="input-terminal w-full p-3 text-xs select-text resize-none h-20"
+                    className="input-field w-full p-3 text-sm select-text resize-none h-20"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold flex justify-between">
+                  <label className="text-xs text-ink-muted tracking-wide block font-medium flex justify-between">
                     <span>{APP_COPY.solutions.founderNameLabel}</span>
-                    <span className="text-[9px] text-ink-muted font-normal lowercase normal-case">Optional</span>
+                    <span className="text-ink-muted font-normal">Optional</span>
                   </label>
                   <input
                     type="text"
                     value={solBuilderName}
                     onChange={(e) => setSolBuilderName(e.target.value)}
                     placeholder={APP_COPY.solutions.founderNamePlaceholder}
-                    className="input-terminal w-full px-4 py-2.5 text-xs select-text"
+                    className="input-field w-full px-4 py-2.5 text-sm select-text"
                   />
                 </div>
 
                 {error && (
-                  <div className="p-3 bg-red-950/40 border border-red-500/30 flex items-center gap-2 text-red-300 text-xs">
+                  <div className="p-3 rounded-lg bg-danger/10 border border-danger/30 flex items-center gap-2 text-danger text-sm">
                     <AlertTriangle className="h-4 w-4 shrink-0" />
                     <span>{error}</span>
                   </div>
@@ -220,14 +221,14 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                   <button
                     type="button"
                     onClick={onClose}
-                    className="font-mono text-xs uppercase text-ink-muted px-5 py-2.5 rounded-xl hover:text-ink cursor-pointer"
+                    className="text-sm text-ink-muted px-5 py-2.5 rounded-lg hover:text-ink cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="h-11 flex items-center justify-center gap-2 font-mono text-xs tracking-wider uppercase font-bold bg-gradient-to-r from-teal-500 to-amber-500 text-slate-950 px-6 rounded-xl hover:opacity-95 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+                    className="h-11 flex items-center justify-center gap-2 text-sm font-medium bg-accent text-white px-6 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">

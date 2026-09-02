@@ -33,12 +33,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="flex-grow flex flex-col items-center justify-start py-8 px-4 sm:px-6 lg:px-8 space-y-24 text-ink overflow-hidden relative selection:bg-amber-500/25 selection:text-amber-200">
-
-      {/* Decorative Brand Ambient Glowing Spots */}
-      <div className="absolute top-20 left-1/4 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-96 right-1/4 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="flex-grow flex flex-col items-center justify-start py-8 px-4 sm:px-6 lg:px-8 space-y-24 text-ink selection:bg-accent/20 selection:text-accent">
       <Hero trending={trending} />
       <AboutSection />
       <FeaturesSection />

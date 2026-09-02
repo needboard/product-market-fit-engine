@@ -100,7 +100,7 @@ export default function SolutionsSection({ cluster, userId, onClusterUpdate }: S
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <SectionBadge icon={Check} index="01" label={APP_COPY.solutions.tabTitle} accent="teal" className="mb-2" />
-          <p className="text-ink-muted text-xs font-mono uppercase tracking-wider">
+          <p className="text-ink-muted text-sm">
             {APP_COPY.solutions.tabSubtitle}
           </p>
         </div>
@@ -117,7 +117,7 @@ export default function SolutionsSection({ cluster, userId, onClusterUpdate }: S
           <button
             data-testid="add-solution-button"
             onClick={openAddForm}
-            className="shrink-0 font-mono text-[10px] uppercase font-bold tracking-wider bg-teal-500 hover:bg-teal-600 text-slate-950 px-4 py-2 rounded-xl transition-all cursor-pointer"
+            className="shrink-0 text-sm font-medium bg-accent hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity cursor-pointer"
           >
             {APP_COPY.solutions.addSolutionButton}
           </button>
@@ -144,13 +144,13 @@ export default function SolutionsSection({ cluster, userId, onClusterUpdate }: S
           ))}
         </div>
       ) : (
-        <div className="p-8 border border-dashed border-[color:var(--raw-border-subtle)] text-center flex flex-col items-center justify-center gap-3">
-          <p className="text-xs text-ink-muted max-w-md font-sans leading-relaxed">
+        <div className="p-8 rounded-xl border border-dashed border-border text-center flex flex-col items-center justify-center gap-3">
+          <p className="text-sm text-ink-muted max-w-md leading-relaxed">
             {APP_COPY.solutions.noSolutions}
           </p>
           <button
             onClick={openAddForm}
-            className="font-mono text-[9px] uppercase tracking-wider font-bold bg-white/5 hover:bg-white/10 text-ink border border-[color:var(--raw-border-subtle)] px-4 py-2 rounded-xl transition-all cursor-pointer"
+            className="text-sm font-medium bg-ink/5 hover:bg-ink/10 text-ink border border-border px-4 py-2 rounded-lg transition-colors cursor-pointer"
           >
             List Your Product Now
           </button>

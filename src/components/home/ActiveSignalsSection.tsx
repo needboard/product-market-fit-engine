@@ -18,9 +18,9 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="w-full max-w-6xl space-y-12"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[color:var(--raw-border-subtle)] pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-display font-bold">
+          <h2 className="text-2xl sm:text-3xl font-serif font-semibold">
             {HOMEPAGE_COPY.activeSignals.title}
           </h2>
           <p className="text-ink-muted text-sm font-sans mt-1">
@@ -29,7 +29,7 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
         </div>
         <Link
           href="/browse"
-          className="font-mono text-[10px] tracking-widest uppercase font-bold text-ink-muted hover:text-ink flex items-center gap-1.5 transition-colors group cursor-pointer"
+          className="text-xs font-medium text-ink-muted hover:text-ink flex items-center gap-1.5 transition-colors group cursor-pointer"
         >
           {HOMEPAGE_COPY.activeSignals.ctaText} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
         </Link>
@@ -42,11 +42,11 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
               key={cluster.id}
               href={`/cluster/${cluster.id}`}
               accent="amber"
-              className="p-6 shadow-lg flex flex-col justify-between"
+              className="p-6 flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between font-mono text-[10px] tracking-widest uppercase mb-3">
-                  <span className="text-signal-amber font-bold">{cluster.categoryLabel}</span>
+                <div className="flex items-center justify-between text-xs mb-3">
+                  <span className="text-accent font-medium">{cluster.categoryLabel}</span>
                   <SignalMeter
                     value={cluster.memberCount}
                     max={Math.max(...trending.map((c) => c.memberCount), 10)}
@@ -59,11 +59,11 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
                 </p>
               </div>
 
-              <div className="mt-5 pt-4 border-t border-[color:var(--raw-border-subtle)] flex items-center justify-between">
-                <span className="font-mono text-[9px] text-ink-muted uppercase tracking-widest">
+              <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+                <span className="text-[11px] text-ink-muted">
                   {cluster.sampleVariants.length} variations reported
                 </span>
-                <span className="text-[10px] font-mono text-signal-amber group-hover:text-amber-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-xs text-accent flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   Inspect <ChevronRight className="h-3 w-3" />
                 </span>
               </div>
@@ -73,7 +73,7 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
       ) : loadingNiches ? (
         <PageScanner message="Scanning database signals..." size="md" />
       ) : (
-        <div className="text-center py-16 border border-dashed border-[color:var(--raw-border-subtle)] text-ink-muted font-mono text-xs uppercase tracking-widest">
+        <div className="text-center py-16 rounded-xl border border-dashed border-border text-ink-muted text-sm">
           Nobody's reported a problem yet — yours could be the first thing builders see.
         </div>
       )}

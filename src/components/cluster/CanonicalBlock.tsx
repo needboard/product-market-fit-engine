@@ -9,12 +9,15 @@ import SignalMeter from '@/components/SignalMeter';
 import type { Cluster } from './types';
 
 export default function CanonicalBlock({ cluster }: { cluster: Cluster }) {
-  return (
-    <Panel accent="coral" className="p-8 overflow-hidden">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+  const hasSolutions = (cluster.solutions?.length || 0) > 0;
 
+  return (
+    <Panel
+      accent="coral"
+      className={`p-8 ${hasSolutions ? 'status-stripe-solved' : 'status-stripe-open'}`}
+    >
       <div className="flex items-center justify-between gap-4 mb-4">
-        <span className="font-mono text-[10px] tracking-widest uppercase font-bold text-signal-amber select-none">
+        <span className="text-xs tracking-wider uppercase font-semibold text-accent">
           {cluster.categoryLabel}
         </span>
         <SectionBadge
@@ -25,7 +28,7 @@ export default function CanonicalBlock({ cluster }: { cluster: Cluster }) {
         />
       </div>
 
-      <h1 className="text-2xl sm:text-4xl font-display font-bold text-ink italic leading-relaxed pr-6">
+      <h1 className="text-2xl sm:text-4xl font-serif font-semibold text-ink leading-snug pr-6">
         &quot;{cluster.canonicalText}&quot;
       </h1>
 
@@ -37,22 +40,20 @@ export default function CanonicalBlock({ cluster }: { cluster: Cluster }) {
         className="mt-4"
       />
 
-      {/* Ticket-stub tear line: this is the "problem ticket" itself, evidence is what's attached */}
-      <div className="mt-8 ticket-perforation" />
-      <div className="pt-8">
-        <span className="font-mono text-[10px] text-ink-muted uppercase tracking-widest block mb-4 font-bold">
+      <div className="mt-8 pt-8 border-t border-border">
+        <span className="text-xs text-ink-muted uppercase tracking-wider block mb-4 font-semibold">
           {APP_COPY.clusterDetail.evidenceSubtitle}
         </span>
         <ul className="space-y-4">
           {cluster.sampleVariants.map((variant, i) => (
             <motion.li
               key={i}
-              className="p-4 bg-bg-void/40 border border-[color:var(--raw-border-subtle)] text-sm text-ink-muted italic leading-relaxed hover:border-white/10 transition-colors"
+              className="p-4 rounded-lg bg-ink/[0.03] border border-border text-sm text-ink-muted leading-relaxed"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
             >
-              • &quot;{variant}&quot;
+              &quot;{variant}&quot;
             </motion.li>
           ))}
         </ul>

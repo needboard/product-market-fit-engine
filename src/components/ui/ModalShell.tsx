@@ -7,12 +7,12 @@ import { ReactNode } from 'react';
 interface ModalShellProps {
   isOpen: boolean;
   onClose: () => void;
-  /** Icon rendered inside the glowing icon well (top of the card). */
+  /** Icon rendered inside the icon well (top of the card). */
   icon: ReactNode;
-  /** Background/border/shadow classes for the icon well circle. */
+  /** Background/border classes for the icon well circle. */
   iconWellClass: string;
-  /** Ambient glow-spot classes (e.g. "bg-teal-500/5"). */
-  accentGlowClass: string;
+  /** Accepted for API compatibility; unused now that panels are flat. */
+  accentGlowClass?: string;
   title: string;
   message: string;
   /** Extra classes appended to the title heading. */
@@ -25,17 +25,15 @@ interface ModalShellProps {
 }
 
 /**
- * Shared modal chrome: backdrop overlay + panel card + icon-well/title/body
- * layout. Extracted from AlertModal/ConfirmModal, which previously
- * re-implemented this shell independently. Callers own their icon theming
- * and action buttons; this component owns only the shell and animation.
+ * Shared modal chrome: backdrop overlay + flat panel card + icon-well/title/
+ * body layout. Callers own their icon theming and action buttons; this
+ * component owns only the shell and animation.
  */
 export default function ModalShell({
   isOpen,
   onClose,
   icon,
   iconWellClass,
-  accentGlowClass,
   title,
   message,
   titleClassName = '',
@@ -48,45 +46,42 @@ export default function ModalShell({
       {isOpen && (
         <div className="fixed inset-0 z-[2147483645] flex items-center justify-center p-4">
 
-          {/* Backdrop Blur */}
+          {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-bg-void/80 backdrop-blur-md"
+            className="absolute inset-0 bg-ink/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
 
-          {/* Modal Card Content */}
+          {/* Modal Card */}
           <motion.div
-            className="relative bg-bg-panel max-w-sm w-full p-6 sm:p-8 shadow-2xl overflow-hidden text-center backdrop-blur-2xl hud-corners"
-            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="relative panel-surface rounded-2xl max-w-sm w-full p-6 sm:p-8 shadow-xl text-center"
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: 'spring', stiffness: 450, damping: 28 }}
           >
-            {/* Subtle glow spot */}
-            <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 ${accentGlowClass} rounded-full blur-3xl pointer-events-none`} />
-
-            {/* Close Button X */}
+            {/* Close Button */}
             <button
               onClick={onClose}
               data-testid={closeButtonTestId}
-              className={`${closeButtonClassName} absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink rounded-lg hover:bg-white/5 transition-colors cursor-pointer`}
+              className={`${closeButtonClassName} absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink rounded-lg hover:bg-ink/5 transition-colors cursor-pointer`}
             >
               <X className="h-3.5 w-3.5" />
             </button>
 
-            {/* Glowing Type Icon */}
-            <div className={`mx-auto w-12 h-12 rounded-full border flex items-center justify-center mb-5 animate-bounce ${iconWellClass}`}>
+            {/* Type Icon */}
+            <div className={`mx-auto w-12 h-12 rounded-full border flex items-center justify-center mb-5 ${iconWellClass}`}>
               {icon}
             </div>
 
             {/* Title & Description */}
-            <h3 className={`text-xl font-bold font-display italic text-ink leading-snug ${titleClassName}`}>
+            <h3 className={`text-xl font-serif font-semibold text-ink leading-snug ${titleClassName}`}>
               {title}
             </h3>
-            <p className="text-xs text-ink-muted mt-3 leading-relaxed font-sans max-w-xs mx-auto">
+            <p className="text-sm text-ink-muted mt-3 leading-relaxed max-w-xs mx-auto">
               {message}
             </p>
 

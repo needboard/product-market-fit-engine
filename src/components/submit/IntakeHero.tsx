@@ -15,12 +15,12 @@ export default function IntakeHero({ trending }: { trending: Cluster[] }) {
       transition={{ duration: 0.8, ease: 'easeOut' }}
     >
       <div className="flex flex-col items-center lg:items-start gap-3">
-        <div className="p-2 bg-signal-amber/10 rounded-xl inline-flex"><Plus className="h-5 w-5 text-signal-amber" /></div>
-        <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-signal-amber">
+        <div className="p-2 bg-accent/10 rounded-xl inline-flex"><Plus className="h-5 w-5 text-accent" /></div>
+        <span className="text-xs tracking-[0.15em] uppercase font-semibold text-accent">
           {APP_COPY.home.badge}
         </span>
       </div>
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold tracking-tight leading-tight py-1 bg-gradient-to-r from-amber-400 via-coral-400 to-teal-400 bg-clip-text text-transparent select-none">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight leading-tight py-1 text-ink select-none">
         {APP_COPY.home.heroTitle}
       </h1>
       <p className="mx-auto lg:mx-0 max-w-md text-ink-muted text-sm sm:text-base leading-relaxed">
@@ -29,8 +29,8 @@ export default function IntakeHero({ trending }: { trending: Cluster[] }) {
 
       {/* Live proof-of-life: the current highest-signal problem, not decoration */}
       {trending.length > 0 && (
-        <div className="hidden lg:block pt-5 border-t border-[color:var(--raw-border-subtle)] max-w-md">
-          <span className="font-mono text-[9px] uppercase tracking-widest text-ink-muted font-bold">
+        <div className="hidden lg:block pt-5 border-t border-border max-w-md">
+          <span className="text-xs uppercase tracking-wider text-ink-muted font-medium">
             Live signal right now
           </span>
           <div className="mt-3 flex items-center gap-3">

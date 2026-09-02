@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUp, ExternalLink, Pencil, Trash2, Globe, AlertTriangle } from 'lucide-react';
+import { ArrowUp, ExternalLink, Pencil, Trash2, Globe, AlertTriangle, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { APP_COPY } from '@/lib/config/copy';
 import { ButtonSpinner } from '@/components/Loader';
@@ -103,7 +103,7 @@ export default function SolutionCard({
 
   return (
     <motion.div
-      className="p-6 bg-bg-panel/40 flex flex-col gap-4 transition-all duration-300 shadow-xl glass-card animate-fade-in hud-corners-coral"
+      className="p-6 rounded-xl panel-surface status-stripe-solved flex flex-col gap-4"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -114,18 +114,18 @@ export default function SolutionCard({
           <button
             onClick={() => onVote(sol.id, 'up')}
             disabled={isUpvoting}
-            className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all cursor-pointer ${
+            className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-colors cursor-pointer ${
               hasUpvoted
-                ? 'bg-amber-500/20 text-brand-amber border-brand-amber/35'
-                : 'bg-bg-void/40 text-ink-muted border-[color:var(--raw-border-subtle)] hover:bg-bg-void/80 hover:text-ink animate-pulse-subtle'
+                ? 'bg-accent/10 text-accent border-accent/30'
+                : 'bg-ink/5 text-ink-muted border-border hover:bg-ink/10 hover:text-ink'
             }`}
             title={hasUpvoted ? "Remove Upvote" : "Upvote"}
           >
             <ArrowUp className="h-4 w-4" />
           </button>
 
-          <span className={`font-mono text-[11px] font-bold w-8 text-center transition-colors ${
-            hasUpvoted ? 'text-brand-amber' : hasDownvoted ? 'text-rose-500' : 'text-ink-muted'
+          <span className={`font-mono text-xs font-semibold w-8 text-center transition-colors ${
+            hasUpvoted ? 'text-accent' : hasDownvoted ? 'text-danger' : 'text-ink-muted'
           }`}>
             {isUpvoting ? (
               <div className="flex justify-center"><ButtonSpinner size="xs" /></div>
@@ -137,10 +137,10 @@ export default function SolutionCard({
           <button
             onClick={() => onVote(sol.id, 'down')}
             disabled={isUpvoting}
-            className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all cursor-pointer ${
+            className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-colors cursor-pointer ${
               hasDownvoted
-                ? 'bg-rose-500/20 text-rose-500 border-rose-500/35'
-                : 'bg-bg-void/40 text-ink-muted border-[color:var(--raw-border-subtle)] hover:bg-bg-void/80 hover:text-ink animate-pulse-subtle'
+                ? 'bg-danger/10 text-danger border-danger/30'
+                : 'bg-ink/5 text-ink-muted border-border hover:bg-ink/10 hover:text-ink'
             }`}
             title={hasDownvoted ? "Remove Downvote" : "Downvote"}
           >
@@ -154,16 +154,16 @@ export default function SolutionCard({
             <img
               src={sol.iconUrl || "/placeholder-solution-icon.png"}
               alt={`${sol.name} icon`}
-              className="w-10 h-10 rounded-xl bg-bg-void border border-white/10 shrink-0 object-contain select-none"
+              className="w-10 h-10 rounded-lg bg-ink/5 border border-border shrink-0 object-contain select-none"
             />
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="text-base font-bold text-ink">{sol.name}</h4>
+                <h4 className="text-base font-semibold text-ink">{sol.name}</h4>
                 <a
                   href={sol.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-ink-muted hover:text-signal-amber p-1 rounded hover:bg-white/5 transition-all"
+                  className="text-ink-muted hover:text-accent p-1 rounded hover:bg-ink/5 transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
@@ -171,7 +171,7 @@ export default function SolutionCard({
                   <div className="flex items-center gap-1.5 ml-2">
                     <button
                       onClick={() => onEditStart(sol)}
-                      className="p-1.5 rounded-lg bg-white/5 border border-[color:var(--raw-border-subtle)] hover:border-amber-500/35 hover:bg-amber-500/10 text-ink-muted hover:text-amber-400 cursor-pointer transition-all"
+                      className="p-1.5 rounded-lg bg-ink/5 border border-border hover:bg-accent/10 text-ink-muted hover:text-accent cursor-pointer transition-colors"
                       title="Edit Listing"
                     >
                       <Pencil className="h-3.5 w-3.5" />
@@ -179,7 +179,7 @@ export default function SolutionCard({
                     <button
                       onClick={() => onDeleteRequest(sol.id)}
                       disabled={isDeleting}
-                      className="p-1.5 rounded-lg bg-white/5 border border-[color:var(--raw-border-subtle)] hover:border-red-500/35 hover:bg-red-500/10 text-ink-muted hover:text-red-400 cursor-pointer transition-all"
+                      className="p-1.5 rounded-lg bg-ink/5 border border-border hover:bg-danger/10 text-ink-muted hover:text-danger cursor-pointer transition-colors"
                       title="Delete Listing"
                     >
                       {isDeleting ? <ButtonSpinner size="xs" /> : <Trash2 className="h-3.5 w-3.5" />}
@@ -187,43 +187,44 @@ export default function SolutionCard({
                   </div>
                 )}
               </div>
-              <span className="text-[9px] font-mono text-ink-muted uppercase tracking-widest block flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-xs text-ink-muted block flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span>Listed by {sol.builderName}</span>
                 {sol.builderBio && (
-                  <span className="text-ink-muted italic normal-case font-sans">({sol.builderBio})</span>
+                  <span className="text-ink-muted italic">({sol.builderBio})</span>
                 )}
                 {sol.builderGithub && (
-                  <a href={sol.builderGithub} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink-muted p-0.5 transition-colors" title="Builder GitHub Profile">
+                  <a href={sol.builderGithub} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink p-0.5 transition-colors" title="Builder GitHub Profile">
                     <GithubIcon className="h-3 w-3 inline -mt-0.5" />
                   </a>
                 )}
                 {sol.builderWebsite && (
-                  <a href={sol.builderWebsite} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink-muted p-0.5 transition-colors" title="Builder Personal Website">
+                  <a href={sol.builderWebsite} target="_blank" rel="noopener noreferrer" className="text-ink-muted hover:text-ink p-0.5 transition-colors" title="Builder Personal Website">
                     <Globe className="h-3 w-3 inline -mt-0.5" />
                   </a>
                 )}
               </span>
             </div>
           </div>
-          <p className="text-ink-muted text-sm leading-relaxed font-sans pt-2">{sol.description}</p>
+          <p className="text-ink-muted text-sm leading-relaxed pt-2">{sol.description}</p>
         </div>
       </div>
 
       {/* Card Footer: Reviews toggle and dynamic stars rating */}
-      <div className="flex items-center gap-4 pt-3 border-t border-[color:var(--raw-border-subtle)] flex-wrap">
+      <div className="flex items-center gap-4 pt-3 border-t border-border flex-wrap">
         <button
           onClick={toggleExpansion}
-          className={`font-mono text-[9px] uppercase tracking-widest font-bold cursor-pointer flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all ${
+          className={`text-xs font-medium cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${
             isExpanded
-              ? 'bg-amber-500/10 text-signal-amber border border-amber-500/20'
-              : 'bg-white/5 text-ink-muted hover:bg-white/10 hover:text-ink border border-transparent'
+              ? 'bg-accent/10 text-accent'
+              : 'bg-ink/5 text-ink-muted hover:bg-ink/10 hover:text-ink'
           }`}
         >
-          💬 Reviews ({reviews ? reviews.length : 'View'})
+          <MessageCircle className="h-3.5 w-3.5" />
+          Reviews ({reviews ? reviews.length : 'View'})
         </button>
 
         {reviews && reviews.length > 0 && (
-          <div className="flex items-center gap-1.5 font-mono text-[9px] text-signal-amber uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-xs text-accent">
             <span>
               {Array.from({ length: 5 }).map((_, starIdx) => (starIdx < Math.round(avgRating || 0) ? '★' : '☆')).join('')}
             </span>
@@ -236,13 +237,13 @@ export default function SolutionCard({
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            className="space-y-4 pt-4 border-t border-[color:var(--raw-border-subtle)] text-left overflow-hidden"
+            className="space-y-4 pt-4 border-t border-border text-left overflow-hidden"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
           >
             <div className="flex items-center justify-between gap-4">
-              <h5 className="font-mono text-[10px] text-ink-muted uppercase tracking-widest font-bold">
+              <h5 className="text-xs text-ink-muted uppercase tracking-wider font-semibold">
                 {APP_COPY.reviews.title}
               </h5>
               {userId && !showReviewForm && !(reviews || []).some(r => r.userId === userId) && (
@@ -254,7 +255,7 @@ export default function SolutionCard({
                     setReviewError(null);
                     setShowReviewForm(true);
                   }}
-                  className="font-mono text-[8px] uppercase tracking-wider font-bold bg-white/5 hover:bg-white/10 text-ink-muted border border-[color:var(--raw-border-subtle)] px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+                  className="text-xs font-medium bg-ink/5 hover:bg-ink/10 text-ink-muted border border-border px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                 >
                   {APP_COPY.reviews.addReviewButton}
                 </button>
@@ -264,12 +265,12 @@ export default function SolutionCard({
             {showReviewForm && (
               <motion.form
                 onSubmit={handleReviewSubmit}
-                className="p-4 bg-bg-void/40 border border-[color:var(--raw-border-subtle)] space-y-4"
+                className="p-4 rounded-lg bg-ink/[0.03] border border-border space-y-4"
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-[9px] text-ink-muted uppercase tracking-widest font-bold">
+                  <span className="text-xs text-ink-muted font-medium">
                     {APP_COPY.reviews.ratingLabel}:
                   </span>
                   <div className="flex gap-1.5">
@@ -278,7 +279,7 @@ export default function SolutionCard({
                         key={star}
                         type="button"
                         onClick={() => setRevRating(star)}
-                        className={`text-base transition-colors cursor-pointer ${star <= revRating ? 'text-signal-amber' : 'text-ink-muted hover:text-ink-muted'}`}
+                        className={`text-base transition-colors cursor-pointer ${star <= revRating ? 'text-accent' : 'text-ink-muted hover:text-ink'}`}
                       >
                         ★
                       </button>
@@ -287,35 +288,35 @@ export default function SolutionCard({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-mono text-[9px] text-ink-muted uppercase tracking-widest font-bold block">
+                  <label className="text-xs text-ink-muted font-medium block">
                     {APP_COPY.reviews.reviewTextLabel}
                   </label>
                   <textarea
                     value={revText}
                     onChange={(e) => setRevText(e.target.value)}
                     placeholder={APP_COPY.reviews.reviewTextPlaceholder}
-                    className="input-terminal w-full p-3 text-xs h-16 resize-none"
+                    className="input-field w-full p-3 text-sm h-16 resize-none"
                     required
                   />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 items-end justify-between">
                   <div className="w-full sm:w-1/2 space-y-1">
-                    <label className="font-mono text-[9px] text-ink-muted uppercase tracking-widest font-bold block flex justify-between">
+                    <label className="text-xs text-ink-muted font-medium block flex justify-between">
                       <span>{APP_COPY.reviews.reviewerNameLabel}</span>
-                      <span className="text-[8px] text-ink-muted font-normal lowercase normal-case">Optional</span>
+                      <span className="text-ink-muted font-normal">Optional</span>
                     </label>
                     <input
                       type="text"
                       value={revName}
                       onChange={(e) => setRevName(e.target.value)}
                       placeholder={APP_COPY.reviews.reviewerNamePlaceholder}
-                      className="input-terminal w-full px-3 py-1.5 text-xs"
+                      className="input-field w-full px-3 py-1.5 text-sm"
                     />
                   </div>
 
                   {reviewError && (
-                    <div className="p-2 bg-red-950/40 border border-red-500/30 flex items-center gap-1.5 text-red-300 text-[10px] text-left">
+                    <div className="p-2 rounded-lg bg-danger/10 border border-danger/30 flex items-center gap-1.5 text-danger text-xs text-left">
                       <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                       <span>{reviewError}</span>
                     </div>
@@ -325,17 +326,17 @@ export default function SolutionCard({
                     <button
                       type="button"
                       onClick={() => setShowReviewForm(false)}
-                      className="font-mono text-[9px] uppercase text-ink-muted py-2 px-3 border border-[color:var(--raw-border-subtle)] rounded-lg hover:text-ink cursor-pointer"
+                      className="text-xs text-ink-muted py-2 px-3 border border-border rounded-lg hover:text-ink cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={submittingReview}
-                      className="h-8 flex items-center justify-center gap-1 font-mono text-[9px] tracking-wider uppercase font-bold bg-gradient-to-r from-teal-500 to-amber-500 text-slate-950 px-4 rounded-lg hover:opacity-95 cursor-pointer disabled:opacity-50"
+                      className="h-8 flex items-center justify-center gap-1.5 text-xs font-medium bg-accent text-white px-4 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-50"
                     >
                       {submittingReview ? (
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1.5">
                           <ButtonSpinner size="xs" />
                           {APP_COPY.reviews.submitButtonLoading}
                         </span>
@@ -355,24 +356,24 @@ export default function SolutionCard({
             ) : reviews && reviews.length > 0 ? (
               <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                 {reviews.map((rev) => (
-                  <div key={rev._id || rev.createdAt} className="p-3.5 bg-bg-void/30 border border-[color:var(--raw-border-subtle)] space-y-1.5 text-left">
+                  <div key={rev._id || rev.createdAt} className="p-3.5 rounded-lg bg-ink/[0.03] border border-border space-y-1.5 text-left">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-ink-muted">{rev.userName}</span>
-                        <span className="text-signal-amber text-xs select-none">
+                        <span className="text-sm font-medium text-ink">{rev.userName}</span>
+                        <span className="text-accent text-xs select-none">
                           {'★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating)}
                         </span>
                       </div>
-                      <span className="font-mono text-[8px] text-ink-muted uppercase">
+                      <span className="text-xs text-ink-muted">
                         {new Date(rev.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-ink-muted text-xs font-sans leading-relaxed">{rev.text}</p>
+                    <p className="text-ink-muted text-sm leading-relaxed">{rev.text}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-ink-muted font-sans italic py-2">
+              <p className="text-sm text-ink-muted italic py-2">
                 {APP_COPY.reviews.noReviews}
               </p>
             )}

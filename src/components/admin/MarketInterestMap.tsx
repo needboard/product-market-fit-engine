@@ -10,24 +10,24 @@ export default function MarketInterestMap({ categoryPopularity }: { categoryPopu
   const maxCount = Math.max(...Object.values(categoryPopularity), 1);
 
   return (
-    <Panel accent="coral" className="p-6 space-y-6">
+    <Panel accent="teal" className="p-6 space-y-6">
       <div>
         <SectionBadge icon={TrendingUp} index="03" label="Market Vertical Interest Map" accent="teal" />
-        <p className="text-ink-muted text-xs font-mono uppercase tracking-wider mt-2">
-          NICHES RANKED BY NUMBER OF TOTAL CUSTOMER REPORTS AND COMPLAINTS
+        <p className="text-ink-muted text-xs mt-2">
+          Niches ranked by number of total customer reports and complaints
         </p>
       </div>
 
-      <div className="space-y-4 pt-4 border-t border-[color:var(--raw-border-subtle)]">
+      <div className="space-y-4 pt-4 border-t border-border">
         {entries.length > 0 ? (
           entries.map(([category, count]) => (
             <div key={category} className="flex items-center justify-between gap-4 text-xs">
-              <span className="text-ink-muted font-mono text-[10px] tracking-wide font-semibold truncate">{category}</span>
+              <span className="text-ink-muted text-xs font-medium truncate">{category}</span>
               <SignalMeter value={count} max={maxCount} size="sm" label={`${count} reports`} />
             </div>
           ))
         ) : (
-          <div className="text-center font-mono text-[10px] text-ink-muted py-6">
+          <div className="text-center text-xs text-ink-muted py-6">
             No market data recorded yet.
           </div>
         )}

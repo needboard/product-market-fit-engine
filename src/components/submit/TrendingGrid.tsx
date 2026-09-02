@@ -11,20 +11,20 @@ import type { Cluster } from './types';
 
 export default function TrendingGrid({ trending, trendingLoading }: { trending: Cluster[]; trendingLoading: boolean }) {
   return (
-    <div className="w-full max-w-6xl mt-12 border-t border-[color:var(--raw-border-subtle)] pt-16">
+    <div className="w-full max-w-6xl mt-12 border-t border-border pt-16">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8">
         <div>
-          <SectionBadge icon={TrendingUp} index="01" label="TRENDING SIGNALS" accent="amber" className="mb-2" />
-          <h2 className="text-2xl sm:text-3xl font-display font-bold">
+          <SectionBadge icon={TrendingUp} index="01" label="Trending signals" accent="amber" className="mb-2" />
+          <h2 className="text-2xl sm:text-3xl font-serif font-semibold">
             {APP_COPY.home.trendingTitle}
           </h2>
-          <p className="text-ink-muted text-xs sm:text-sm font-mono tracking-wider mt-1">
+          <p className="text-ink-muted text-xs sm:text-sm mt-1">
             {APP_COPY.home.trendingSubtitle}
           </p>
         </div>
         <Link
           href="/browse"
-          className="mt-4 sm:mt-0 font-mono text-[10px] tracking-widest uppercase font-bold text-ink-muted hover:text-ink flex items-center gap-1.5 cursor-pointer group"
+          className="mt-4 sm:mt-0 text-xs tracking-wide uppercase font-semibold text-ink-muted hover:text-ink flex items-center gap-1.5 cursor-pointer group"
         >
           {APP_COPY.home.browseAllLink} <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
         </Link>
@@ -41,7 +41,7 @@ export default function TrendingGrid({ trending, trendingLoading }: { trending: 
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-[10px] tracking-widest uppercase text-signal-amber font-bold">{cluster.categoryLabel}</span>
+                  <span className="text-xs tracking-wide uppercase text-accent font-semibold">{cluster.categoryLabel}</span>
                   <SignalMeter
                     value={cluster.memberCount}
                     max={Math.max(...trending.map((c) => c.memberCount), 10)}
@@ -49,16 +49,16 @@ export default function TrendingGrid({ trending, trendingLoading }: { trending: 
                     label={`${cluster.memberCount} signals`}
                   />
                 </div>
-                <p className="text-ink font-medium text-base leading-relaxed group-hover:text-ink transition-colors">
+                <p className="text-ink font-medium text-base leading-relaxed">
                   &quot;{cluster.canonicalText}&quot;
                 </p>
               </div>
 
-              <div className="mt-5 pt-4 border-t border-[color:var(--raw-border-subtle)] flex items-center justify-between">
-                <span className="font-mono text-[9px] text-ink-muted uppercase tracking-widest">
+              <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+                <span className="text-xs text-ink-muted uppercase tracking-wide">
                   {cluster.sampleVariants.length} {APP_COPY.home.distinctPhrasingsSuffix}
                 </span>
-                <span className="text-[10px] font-mono text-signal-amber group-hover:text-signal-amber flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="text-xs text-accent flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {APP_COPY.home.inspectLink} <ChevronRight className="h-3 w-3" />
                 </span>
               </div>
@@ -68,7 +68,7 @@ export default function TrendingGrid({ trending, trendingLoading }: { trending: 
       ) : trendingLoading ? (
         <PageScanner message="Scanning database signals..." size="md" />
       ) : (
-        <div className="text-center py-12 border border-dashed border-[color:var(--raw-border-subtle)] text-ink-muted font-mono text-xs uppercase tracking-widest">
+        <div className="text-center py-12 rounded-xl border border-dashed border-border text-ink-muted text-xs uppercase tracking-wide">
           No reports yet in this space. Be the first voice — every early report gets full visibility once builders start browsing.
         </div>
       )}

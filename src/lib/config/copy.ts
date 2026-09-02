@@ -12,7 +12,7 @@ export const APP_COPY = {
   },
 
   home: {
-    badge: "00 // Collective Problem Clustering",
+    badge: "Collective Problem Clustering",
     heroTitle: "Find Problems Worth Solving.",
     heroSubtitle: "Real customer complaints and product frustrations, organized into active groups with pre-validated demand.",
     inputPlaceholder: "Describe a problem or frustration (e.g., inventory sync breaks across Shopify and Etsy)...",

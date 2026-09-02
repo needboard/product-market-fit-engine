@@ -52,14 +52,14 @@ export default function ClusterDetailPage({ params }: { params: Promise<{ id: st
 
   if (error || !cluster) {
     return (
-      <div className="mx-auto max-w-xl text-center py-32 px-4 select-none animate-fade-in">
-        <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4 animate-pulse" />
-        <h1 className="text-xl font-bold font-sans text-ink">Error Loading Pain Point</h1>
-        <p className="text-ink-muted text-xs mt-2 leading-relaxed">{error || 'Problem group not found in index.'}</p>
+      <div className="mx-auto max-w-xl text-center py-32 px-4">
+        <AlertTriangle className="mx-auto h-12 w-12 text-danger mb-4" />
+        <h1 className="text-xl font-semibold font-serif text-ink">Error Loading Pain Point</h1>
+        <p className="text-ink-muted text-sm mt-2 leading-relaxed">{error || 'Problem group not found in index.'}</p>
         <div className="mt-8 flex gap-4 justify-center">
           <Link
             href="/browse"
-            className="font-mono text-xs font-bold uppercase bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl border border-[color:var(--raw-border-subtle)] text-ink cursor-pointer"
+            className="text-sm font-medium bg-ink/5 hover:bg-ink/10 px-5 py-2.5 rounded-lg border border-border text-ink cursor-pointer"
           >
             Return to Browse
           </Link>
@@ -69,7 +69,7 @@ export default function ClusterDetailPage({ params }: { params: Promise<{ id: st
               setLoading(true);
               setRefreshTrigger((prev) => prev + 1);
             }}
-            className="font-mono text-xs font-bold uppercase bg-gradient-to-r from-brand-amber to-brand-coral text-slate-950 px-5 py-2.5 rounded-xl cursor-pointer"
+            className="text-sm font-medium bg-accent text-white hover:opacity-90 px-5 py-2.5 rounded-lg cursor-pointer"
           >
             Retry Load
           </button>
@@ -83,7 +83,7 @@ export default function ClusterDetailPage({ params }: { params: Promise<{ id: st
       <div className="mb-6">
         <Link
           href={`/browse/${cluster.category}`}
-          className="inline-flex items-center gap-2 font-mono text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer"
+          className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink transition-colors group cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           {APP_COPY.clusterDetail.backToNiche} ({cluster.categoryLabel})
@@ -100,10 +100,10 @@ export default function ClusterDetailPage({ params }: { params: Promise<{ id: st
         <div className="space-y-6">
           <MeTooCard clusterId={cluster.id} voted={voted} isCreator={isCreator} onSuccess={setCluster} />
 
-          <div className="p-4 bg-bg-panel/30 border border-[color:var(--raw-border-subtle)] font-mono text-[9px] tracking-wide text-ink-muted space-y-2 select-none uppercase">
-            <div>CLUSTER REFERENCE ID: {cluster.id}</div>
-            <div>CREATED COORDINATES: {new Date(cluster.createdAt).toLocaleDateString()}</div>
-            <div>LAST SIGNAL FORTIFY: {new Date(cluster.lastUpdatedAt).toLocaleDateString()}</div>
+          <div className="p-4 rounded-xl panel-surface text-xs text-ink-muted space-y-1.5">
+            <div className="flex justify-between gap-4"><span className="shrink-0">Reference ID</span><span className="font-mono text-ink truncate min-w-0">{cluster.id}</span></div>
+            <div className="flex justify-between gap-4"><span className="shrink-0">Created</span><span className="font-mono text-ink truncate min-w-0">{new Date(cluster.createdAt).toLocaleDateString()}</span></div>
+            <div className="flex justify-between gap-4"><span className="shrink-0">Last updated</span><span className="font-mono text-ink truncate min-w-0">{new Date(cluster.lastUpdatedAt).toLocaleDateString()}</span></div>
           </div>
         </div>
       </div>

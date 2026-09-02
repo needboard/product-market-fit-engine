@@ -53,19 +53,19 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
 
   if (isCreator) {
     return (
-      <Panel accent="coral" glass={false} className="p-6 border-glow backdrop-blur-xl">
-        <div className="absolute top-0 right-0 p-2.5">
-          <Flame className="h-5 w-5 text-signal-teal" />
+      <Panel accent="coral" className="p-6">
+        <div className="absolute top-0 right-0 p-4">
+          <Flame className="h-5 w-5 text-status-matched" />
         </div>
-        <h3 className="text-lg font-bold text-ink font-sans">Your Problem Group</h3>
-        <p className="text-xs text-ink-muted mt-1">
+        <h3 className="text-lg font-semibold text-ink font-serif">Your Problem Group</h3>
+        <p className="text-sm text-ink-muted mt-1">
           You are the original reporter of this problem cluster.
         </p>
         <div className="mt-6">
-          <div className="p-4 bg-teal-500/10 border border-teal-500/25 text-center text-signal-teal">
-            <Check className="mx-auto h-6 w-6 text-signal-teal mb-1" />
-            <span className="font-mono text-xs uppercase font-bold block">Ownership Verified</span>
-            <span className="text-[10px] text-ink-muted leading-normal block mt-1">
+          <div className="p-4 rounded-lg bg-status-solved/10 border border-status-solved/25 text-center text-status-solved">
+            <Check className="mx-auto h-6 w-6 mb-1" />
+            <span className="text-sm font-semibold block">Ownership Verified</span>
+            <span className="text-xs text-ink-muted leading-normal block mt-1">
               You seeded this group. Your original phrasing has already been logged.
             </span>
           </div>
@@ -75,13 +75,13 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
   }
 
   return (
-    <Panel accent="coral" glass={false} className="p-6 border-glow backdrop-blur-xl">
-      <div className="absolute top-0 right-0 p-2.5">
-        <Flame className="h-5 w-5 text-signal-amber animate-pulse" />
+    <Panel accent="coral" className="p-6">
+      <div className="absolute top-0 right-0 p-4">
+        <Flame className="h-5 w-5 text-accent" />
       </div>
 
-      <h3 className="text-lg font-bold text-ink font-sans">{APP_COPY.clusterDetail.meTooTitle}</h3>
-      <p className="text-xs text-ink-muted mt-1">{APP_COPY.clusterDetail.meTooDesc}</p>
+      <h3 className="text-lg font-semibold text-ink font-serif">{APP_COPY.clusterDetail.meTooTitle}</h3>
+      <p className="text-sm text-ink-muted mt-1">{APP_COPY.clusterDetail.meTooDesc}</p>
 
       <div className="mt-6">
         <AnimatePresence mode="wait">
@@ -93,7 +93,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                     data-testid="me-too-button"
                     onClick={() => handleMeTooSubmit({ preventDefault: () => {} } as any)}
                     disabled={submitting}
-                    className="w-full h-11 bg-gradient-to-r from-brand-amber to-brand-coral text-slate-950 font-mono text-xs uppercase tracking-wider font-bold rounded-xl active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_25px_rgba(245,158,11,0.3)] disabled:opacity-30 disabled:pointer-events-none"
+                    className="w-full h-11 bg-accent text-white text-sm font-medium rounded-lg active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:pointer-events-none"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                   <button
                     data-testid="custom-phrasing-toggle"
                     onClick={() => setShowPhrasingInput(true)}
-                    className="w-full text-center font-mono text-[10px] text-ink-muted hover:text-ink uppercase tracking-widest cursor-pointer py-1"
+                    className="w-full text-center text-xs text-ink-muted hover:text-ink cursor-pointer py-1"
                   >
                     + Add custom phrasing variant
                   </button>
@@ -124,7 +124,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                     value={customPhrasing}
                     onChange={(e) => setCustomPhrasing(e.target.value)}
                     placeholder={APP_COPY.clusterDetail.meTooInputPlaceholder}
-                    className="input-terminal w-full p-3 text-xs resize-none"
+                    className="input-field w-full p-3 text-sm resize-none"
                     rows={3}
                     required
                   />
@@ -132,7 +132,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                     <button
                       type="button"
                       onClick={() => setShowPhrasingInput(false)}
-                      className="w-1/2 font-mono text-[10px] uppercase text-ink-muted py-2 border border-[color:var(--raw-border-subtle)] rounded-lg hover:text-ink cursor-pointer"
+                      className="w-1/2 text-xs text-ink-muted py-2 border border-border rounded-lg hover:text-ink cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -140,7 +140,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                       data-testid="me-too-submit-button"
                       type="submit"
                       disabled={submitting || customPhrasing.trim() === ''}
-                      className="w-1/2 h-9 bg-gradient-to-r from-brand-amber to-brand-coral text-slate-950 font-mono text-[10px] uppercase tracking-wider font-bold rounded-lg active:scale-95 transition-all flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                      className="w-1/2 h-9 bg-accent text-white text-xs font-medium rounded-lg active:scale-95 transition-all flex items-center justify-center cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:pointer-events-none"
                     >
                       {submitting ? (
                         <span className="flex items-center gap-2">
@@ -158,13 +158,13 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
           ) : (
             <motion.div
               key="voted-success"
-              className="p-4 bg-teal-500/10 border border-teal-500/25 text-center text-signal-teal"
+              className="p-4 rounded-lg bg-status-solved/10 border border-status-solved/25 text-center text-status-solved"
               initial={{ scale: 0.95 }}
               animate={{ scale: 1 }}
             >
-              <Check className="mx-auto h-6 w-6 text-signal-teal mb-1" />
-              <span className="font-mono text-xs uppercase font-bold block">Voice Logged</span>
-              <span className="text-[10px] text-ink-muted leading-normal block mt-1">
+              <Check className="mx-auto h-6 w-6 mb-1" />
+              <span className="text-sm font-semibold block">Voice Logged</span>
+              <span className="text-xs text-ink-muted leading-normal block mt-1">
                 {APP_COPY.clusterDetail.meTooSuccess}
               </span>
             </motion.div>
@@ -173,11 +173,11 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
 
         {meTooError && (
           <motion.div
-            className="mt-4 p-3.5 bg-red-950/40 border border-red-500/30 flex items-center gap-2 text-red-300 text-[10px] text-left"
+            className="mt-4 p-3.5 rounded-lg bg-danger/10 border border-danger/30 flex items-center gap-2 text-danger text-xs text-left"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
+            <AlertTriangle className="h-4 w-4 shrink-0" />
             <span>{meTooError}</span>
           </motion.div>
         )}

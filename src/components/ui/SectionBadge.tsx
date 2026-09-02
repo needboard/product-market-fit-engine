@@ -9,25 +9,26 @@ interface SectionBadgeProps {
 }
 
 const ACCENT_CLASSES = {
-  amber: { chip: 'bg-signal-amber/10', icon: 'text-signal-amber', text: 'text-signal-amber' },
-  teal: { chip: 'bg-signal-teal/10', icon: 'text-signal-teal', text: 'text-signal-teal' },
-  coral: { chip: 'bg-signal-coral/10', icon: 'text-signal-coral', text: 'text-signal-coral' },
+  amber: { chip: 'bg-accent/10', icon: 'text-accent', text: 'text-accent' },
+  teal: { chip: 'bg-status-matched/10', icon: 'text-status-matched', text: 'text-status-matched' },
+  coral: { chip: 'bg-status-solved/10', icon: 'text-status-solved', text: 'text-status-solved' },
 } as const;
 
 /**
- * The recurring "0X // SOME LABEL" chip-and-tracked-label pattern used to
- * open every section. Previously copy-pasted per section with drifting
- * markup (some without rounded-xl, some without the icon chip at all).
+ * Plain section eyebrow: an icon chip plus a small tracked label. The
+ * `index` prop is accepted for backward compatibility with existing call
+ * sites but intentionally not rendered — bracketed "0X //" numbering was
+ * part of the old HUD aesthetic this redesign removes.
  */
-export default function SectionBadge({ icon: Icon, index, label, accent = 'amber', className = '' }: SectionBadgeProps) {
+export default function SectionBadge({ icon: Icon, label, accent = 'amber', className = '' }: SectionBadgeProps) {
   const colors = ACCENT_CLASSES[accent];
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <span className={`p-2 rounded-xl inline-flex ${colors.chip}`}>
-        <Icon className={`h-5 w-5 ${colors.icon}`} />
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      <span className={`p-2 rounded-lg inline-flex ${colors.chip}`}>
+        <Icon className={`h-4 w-4 ${colors.icon}`} />
       </span>
-      <span className={`font-mono text-[10px] tracking-[0.3em] uppercase font-bold ${colors.text}`}>
-        {index} // {label}
+      <span className={`text-xs tracking-[0.15em] uppercase font-semibold ${colors.text}`}>
+        {label}
       </span>
     </div>
   );

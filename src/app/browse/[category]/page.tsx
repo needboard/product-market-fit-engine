@@ -2,12 +2,14 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Layers, ChevronRight, TrendingUp, Users, AlertTriangle, Lock } from 'lucide-react';
+import { ArrowLeft, Layers, ChevronRight, TrendingUp, AlertTriangle, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { APP_COPY } from '@/lib/config/copy';
 import { PageScanner } from '@/components/Loader';
 import staticCategories from '@/lib/ai/static-categories';
 import SignalMeter from '@/components/SignalMeter';
+import Panel from '@/components/ui/Panel';
+import SectionBadge from '@/components/ui/SectionBadge';
 
 interface Cluster {
   id: string;
@@ -62,12 +64,12 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      
+
       {/* Back navigation */}
       <div className="mb-6">
         <Link
           href="/browse"
-          className="inline-flex items-center gap-2 font-mono text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           {APP_COPY.browse.backLink}
@@ -75,14 +77,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       </div>
 
       {/* Header */}
-      <div className="mb-12 border-b border-[color:var(--raw-border-subtle)] pb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="p-2 bg-signal-amber/10 rounded-xl inline-flex"><Layers className="h-5 w-5 text-signal-amber" /></div>
-          <span className="font-mono text-[10px] tracking-[0.3em] text-signal-amber uppercase font-bold">
-            00 // Market Segment
-          </span>
-        </div>
-        <h1 className="mt-2 text-3xl sm:text-5xl font-display font-bold tracking-tight text-ink">
+      <div className="mb-12 border-b border-border pb-8">
+        <SectionBadge icon={Layers} index="00" label="Market Segment" accent="amber" />
+        <h1 className="mt-4 text-3xl sm:text-5xl font-serif font-semibold tracking-tight text-ink">
           {activeCategory?.categoryLabel || category.replace('-', ' ')}
         </h1>
         <p className="mt-3 max-w-3xl text-ink-muted text-sm sm:text-base leading-relaxed">
@@ -92,9 +89,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
 
       {/* Clusters List */}
       {isComingSoon ? (
-        <div className="p-10 bg-bg-panel/40 shadow-xl glass-card hud-corners max-w-2xl select-none">
-          <div className="p-2.5 bg-white/5 text-ink-muted inline-flex mb-4"><Lock className="h-5 w-5" /></div>
-          <h2 className="text-xl sm:text-2xl font-bold text-ink font-display">
+        <Panel className="p-10 max-w-2xl select-none">
+          <div className="p-2.5 rounded-lg bg-ink/5 text-ink-muted inline-flex mb-4"><Lock className="h-5 w-5" /></div>
+          <h2 className="text-xl sm:text-2xl font-semibold text-ink font-serif">
             {categoryDes || category.replace('-', ' ')} — Coming Soon
           </h2>
           <p className="text-sm text-ink-muted mt-3 leading-relaxed">
@@ -104,23 +101,23 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
           </p>
           <Link
             href="/browse"
-            className="inline-flex items-center gap-2 font-mono text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer mt-8"
+            className="inline-flex items-center gap-2 text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer mt-8"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             {APP_COPY.browse.backLink}
           </Link>
-        </div>
+        </Panel>
       ) : loading ? (
         <PageScanner message="Querying customer complaints..." />
       ) : error ? (
-        <div className="text-center py-20 px-4 select-none animate-fade-in max-w-xl mx-auto">
-          <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4 animate-pulse" />
-          <h2 className="text-xl font-bold font-sans text-ink">Error Loading Opportunities</h2>
+        <div className="text-center py-20 px-4 select-none max-w-xl mx-auto">
+          <AlertTriangle className="mx-auto h-12 w-12 text-danger mb-4" />
+          <h2 className="text-xl font-semibold text-ink">Error Loading Opportunities</h2>
           <p className="text-ink-muted text-xs mt-2 leading-relaxed">{error}</p>
           <div className="mt-8 flex gap-4 justify-center">
             <Link
               href="/browse"
-              className="font-mono text-xs font-bold uppercase bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl border border-[color:var(--raw-border-subtle)] text-ink cursor-pointer"
+              className="text-xs font-semibold uppercase bg-ink/5 hover:bg-ink/10 px-5 py-2.5 rounded-lg border border-border text-ink cursor-pointer transition-colors"
             >
               Return to Browse
             </Link>
@@ -130,7 +127,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 setLoading(true);
                 setRefreshTrigger(prev => prev + 1);
               }}
-              className="font-mono text-xs font-bold uppercase bg-gradient-to-r from-brand-amber to-brand-coral text-slate-950 px-5 py-2.5 rounded-xl cursor-pointer"
+              className="text-xs font-semibold uppercase bg-accent hover:opacity-90 text-white px-5 py-2.5 rounded-lg cursor-pointer transition-opacity"
             >
               Retry Load
             </button>
@@ -147,9 +144,10 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05, duration: 0.4 }}
               >
-                <Link
+                <Panel
                   href={`/cluster/${cluster.id}`}
-                  className="group block p-6 bg-bg-panel/40 hover:bg-bg-panel/70 transition-all duration-300 shadow-xl glass-card hud-corners"
+                  accent="amber"
+                  className="status-stripe-open block p-6"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
@@ -159,44 +157,44 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                     </div>
 
                     {/* Content Section */}
-                    <div className="flex-grow space-y-2 sm:border-l sm:border-[color:var(--raw-border-subtle)] sm:pl-5">
+                    <div className="flex-grow space-y-2 sm:border-l sm:border-border sm:pl-5">
                       <div className="flex items-center gap-3">
-                        <span className="font-mono text-[9px] text-ink-muted uppercase tracking-widest">
-                          {cluster.memberCount} signals
+                        <span className="text-[11px] text-ink-muted uppercase tracking-wide">
+                          <span className="font-mono">{cluster.memberCount}</span> signals
                         </span>
-                        <span className="font-mono text-[9px] text-signal-teal uppercase flex items-center gap-1">
+                        <span className="text-[11px] text-status-matched uppercase flex items-center gap-1">
                           <TrendingUp className="h-3 w-3" /> Active
                         </span>
                       </div>
 
-                      <h2 className="text-lg sm:text-xl font-bold font-sans text-ink group-hover:opacity-90 transition-opacity">
+                      <h2 className="text-lg sm:text-xl font-semibold text-ink group-hover:opacity-90 transition-opacity">
                         "{cluster.canonicalText}"
                       </h2>
 
-                      <p className="font-mono text-[10px] text-ink-muted uppercase tracking-wide">
-                        CO-SIGNERS PHRASED THIS IN {cluster.sampleVariants.length} DISTINCT WAYS
+                      <p className="text-[11px] text-ink-muted uppercase tracking-wide">
+                        Co-signers phrased this in <span className="font-mono">{cluster.sampleVariants.length}</span> distinct ways
                       </p>
                     </div>
 
                     {/* Action Arrow */}
                     <div className="shrink-0 flex items-center justify-end">
-                      <span className="font-mono text-[11px] text-signal-amber group-hover:opacity-80 flex items-center gap-1 group-hover:translate-x-1 transition-all cursor-pointer">
+                      <span className="text-[13px] text-accent group-hover:opacity-80 flex items-center gap-1 group-hover:translate-x-1 transition-all cursor-pointer">
                         Details <ChevronRight className="h-4 w-4" />
                       </span>
                     </div>
 
                   </div>
-                </Link>
+                </Panel>
               </motion.div>
             ));
           })()}
         </div>
       ) : (
-        <div className="text-center py-24 border border-dashed border-[color:var(--raw-border-subtle)] max-w-xl mx-auto p-8">
-          <p className="font-mono text-sm text-ink-muted">NeedBoard just opened here. Report the first "{categoryDes}" problem and put this vertical on the map.</p>
+        <div className="text-center py-24 border border-dashed border-border rounded-xl max-w-xl mx-auto p-8">
+          <p className="text-sm text-ink-muted">NeedBoard just opened here. Report the first "{categoryDes}" problem and put this vertical on the map.</p>
           <Link
             href="/submit"
-            className="inline-block mt-6 font-mono text-xs font-bold uppercase bg-signal-amber text-slate-950 px-4 py-2 rounded-lg hover:opacity-90 transition-all"
+            className="inline-block mt-6 text-xs font-semibold uppercase bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
           >
             Submit First Problem
           </Link>

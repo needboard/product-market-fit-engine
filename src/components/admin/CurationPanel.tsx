@@ -127,63 +127,63 @@ export default function CurationPanel({ onCostIncurred }: { onCostIncurred: () =
   const uniqueClusters = Array.from(new Map(allClusters.map((c) => [c.id, c])).values());
 
   return (
-    <Panel accent="coral" className="p-6 space-y-6 text-left">
+    <Panel accent="amber" className="p-6 space-y-6 text-left">
       <div>
         <SectionBadge icon={Layers} index="04" label="Manual Problem Curation & Overrides" accent="amber" />
-        <p className="text-ink-muted text-xs font-mono uppercase tracking-wider mt-2">
-          REASSIGN MISCLASSIFIED USER FRUSTRATIONS TO OPTIMIZE CLUSTER COEFFICIENTS
+        <p className="text-ink-muted text-xs mt-2">
+          Reassign misclassified user frustrations to optimize cluster coefficients
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         <div className="space-y-2">
-          <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold">
+          <label className="text-xs text-ink-muted tracking-wide block uppercase font-semibold">
             1. Select Problem Group (Cluster)
           </label>
           <select
             value={selectedClusterId}
             onChange={(e) => setSelectedClusterId(e.target.value)}
-            className="input-terminal w-full px-2 py-2.5 text-xs cursor-pointer"
+            className="input-field w-full px-2 py-2.5 text-xs cursor-pointer"
           >
             <option value=""> Choose a group to inspect </option>
             {uniqueClusters.map((c) => (
-              <option key={c.id} value={c.id} className="bg-bg-void">
+              <option key={c.id} value={c.id}>
                 [{c.categoryLabel}] {(c.canonicalText || '').substring(0, 50)}...
               </option>
             ))}
           </select>
-          <p className="text-[10px] text-ink-muted font-sans leading-normal leading-relaxed pt-1.5">
+          <p className="text-xs text-ink-muted leading-relaxed pt-1.5">
             Choose an active group above. The dashboard will query all individual developer complaints currently mapped to this centroid coordinates.
           </p>
         </div>
 
         <div className="md:col-span-2 space-y-4">
           <div className="flex justify-between items-center h-5">
-            <label className="font-mono text-[10px] text-ink-muted tracking-wider block uppercase font-bold">
+            <label className="text-xs text-ink-muted tracking-wide block uppercase font-semibold">
               2. Mapped Complaints & Reassignment
             </label>
             {selectedClusterId && !loadingProblems && (
               <button
                 onClick={forceRefreshProblems}
-                className="font-mono text-[8px] uppercase tracking-widest font-bold text-ink-muted hover:text-signal-amber transition-colors cursor-pointer flex items-center gap-1.5 p-1 bg-white/5 hover:bg-white/10 rounded-lg px-2.5 py-1"
+                className="text-xs font-semibold text-ink-muted hover:text-accent transition-colors cursor-pointer flex items-center gap-1.5 bg-ink/5 hover:bg-ink/10 rounded-lg px-2.5 py-1"
                 title="Force Sync with Live Database"
               >
-                <RefreshCw className="h-2.5 w-2.5 animate-pulse" />
+                <RefreshCw className="h-3 w-3" />
                 <span>Sync DB</span>
               </button>
             )}
           </div>
 
           {loadingProblems ? (
-            <div className="text-center py-10 font-mono text-[10px] text-ink-muted uppercase tracking-widest animate-pulse">
+            <div className="text-center py-10 text-xs text-ink-muted">
               Fetching individual complaints...
             </div>
           ) : selectedClusterId === '' ? (
-            <div className="text-center py-12 border border-dashed border-[color:var(--raw-border-subtle)] text-ink-muted font-mono text-[9px] uppercase tracking-widest">
+            <div className="text-center py-12 rounded-lg border border-dashed border-border text-ink-muted text-xs">
               Select a problem group on the left to show user complaints
             </div>
           ) : rawProblems.length === 0 ? (
-            <p className="text-xs text-ink-muted font-sans py-4">
+            <p className="text-xs text-ink-muted py-4">
               No individual complaints are mapped to this group anymore (perhaps they were all reassigned!).
             </p>
           ) : (
@@ -193,21 +193,21 @@ export default function CurationPanel({ onCostIncurred }: { onCostIncurred: () =
                 const isReassigning = reassigningId === prob.id;
 
                 return (
-                  <div key={prob.id} className="p-4 bg-bg-void/40 border border-[color:var(--raw-border-subtle)] space-y-3 text-left hover:border-white/10 transition-colors">
+                  <div key={prob.id} className="p-4 rounded-lg bg-ink/5 border border-border space-y-3 text-left hover:border-accent/30 transition-colors">
                     <div>
-                      <div className="flex justify-between items-center text-[9px] font-mono text-ink-muted uppercase pb-1.5">
-                        <span>Complaint ID: {prob.id}</span>
-                        <span>{new Date(prob.createdAt).toLocaleDateString()}</span>
+                      <div className="flex justify-between items-center gap-3 text-xs text-ink-muted pb-1.5">
+                        <span className="truncate min-w-0">Complaint ID: {prob.id}</span>
+                        <span className="shrink-0">{new Date(prob.createdAt).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-ink text-sm font-sans leading-relaxed">"{prob.rawText}"</p>
+                      <p className="text-ink text-sm leading-relaxed">&ldquo;{prob.rawText}&rdquo;</p>
                     </div>
 
-                    <div className="flex items-center gap-3 pt-2.5 border-t border-[color:var(--raw-border-subtle)] flex-wrap">
-                      <span className="font-mono text-[9px] text-ink-muted uppercase font-bold">Move to:</span>
+                    <div className="flex items-center gap-3 pt-2.5 border-t border-border flex-wrap">
+                      <span className="text-xs text-ink-muted font-semibold">Move to:</span>
                       <select
                         value={targetId}
                         onChange={(e) => setReassignTargets((prev) => ({ ...prev, [prob.id]: e.target.value }))}
-                        className="input-terminal px-2.5 py-1 text-[10px] cursor-pointer max-w-[220px]"
+                        className="input-field px-2.5 py-1 text-xs cursor-pointer max-w-[220px]"
                       >
                         <option value=""> Choose target group </option>
                         {uniqueClusters
@@ -221,7 +221,7 @@ export default function CurationPanel({ onCostIncurred }: { onCostIncurred: () =
                       <button
                         onClick={() => handleReassignSubmit(prob.id)}
                         disabled={!targetId || isReassigning}
-                        className="h-7 px-3.5 bg-gradient-to-r from-brand-amber to-brand-coral text-slate-950 font-mono text-[9px] uppercase tracking-wider font-bold rounded-lg active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 ml-auto"
+                        className="h-7 px-3.5 bg-accent text-white text-xs font-semibold rounded-lg active:scale-95 transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1.5 ml-auto"
                       >
                         {isReassigning ? (
                           <>

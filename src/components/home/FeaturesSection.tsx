@@ -113,7 +113,7 @@ export default function FeaturesSection() {
     >
       <div className="text-center space-y-3">
         <SectionBadge icon={Layers} index="02" label="CORE ENGINE CAPABILITIES" accent="amber" className="justify-center" />
-        <h2 className="text-3xl sm:text-4xl font-display font-bold text-ink">
+        <h2 className="text-3xl sm:text-4xl font-serif font-semibold text-ink">
           {HOMEPAGE_COPY.features.title}
         </h2>
         <p className="text-ink-muted text-sm max-w-xl mx-auto font-sans leading-relaxed">
@@ -128,10 +128,10 @@ export default function FeaturesSection() {
         className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center"
       >
         <div className="space-y-4">
-          <span className="font-mono text-[10px] text-signal-amber tracking-wider font-bold block">
+          <span className="text-xs text-accent font-semibold block">
             {HOMEPAGE_COPY.features.list[0]?.badge}
           </span>
-          <h3 className="text-2xl font-bold text-ink font-display">
+          <h3 className="text-2xl font-semibold text-ink font-serif">
             {HOMEPAGE_COPY.features.list[0]?.title}
           </h3>
           <p className="text-ink-muted text-sm leading-relaxed font-sans">
@@ -140,26 +140,21 @@ export default function FeaturesSection() {
         </div>
 
         {/* Interactive Search Console Mock */}
-        <Panel accent="amber" className="p-6 font-mono text-xs select-none">
-          <div className="flex items-center justify-between border-b border-[color:var(--raw-border-subtle)] pb-3 mb-4 text-[10px] text-ink-muted uppercase font-bold tracking-wider">
+        <Panel accent="amber" className="p-6 text-xs select-none">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-4 text-[11px] text-ink-muted font-medium">
             <span>{HOMEPAGE_COPY.features.list[0]?.interactiveTitle}</span>
-            <div className="flex gap-1">
-              <span className="w-2 h-2 rounded-full bg-red-500/40" />
-              <span className="w-2 h-2 rounded-full bg-signal-amber/40" />
-              <span className="w-2 h-2 rounded-full bg-teal-500/40" />
-            </div>
           </div>
 
           <motion.div
             layout
             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-            className="bg-bg-void/80 rounded-xl p-4 border border-[color:var(--raw-border-subtle)] h-[185px] flex flex-col justify-between space-y-4"
+            className="bg-bg rounded-xl p-4 border border-border h-[185px] flex flex-col justify-between space-y-4"
           >
-            <div className="flex items-start gap-2">
-              <span className="text-signal-amber font-bold shrink-0">$ query:</span>
+            <div className="flex items-start gap-2 font-mono">
+              <span className="text-accent font-bold shrink-0">$ query:</span>
               <span className="text-ink-muted">
                 {searchText}
-                {searchMockPhase === 'typing' && <span className="animate-pulse font-bold text-signal-amber">|</span>}
+                {searchMockPhase === 'typing' && <span className="animate-pulse font-bold text-accent">|</span>}
               </span>
             </div>
 
@@ -167,7 +162,7 @@ export default function FeaturesSection() {
               {searchMockPhase === 'scanning' && (
                 <motion.div
                   key="scanning"
-                  className="flex items-center gap-2 text-signal-teal text-[10px] font-bold tracking-widest uppercase animate-pulse"
+                  className="flex items-center gap-2 text-status-matched text-xs font-medium"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -179,14 +174,14 @@ export default function FeaturesSection() {
               {searchMockPhase === 'matched' && (
                 <motion.div
                   key="matched"
-                  className="p-3 bg-signal-teal/5 border border-signal-teal/20 rounded-xl space-y-1.5"
+                  className="p-3 bg-status-matched/10 rounded-xl space-y-1.5"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div className="flex items-center justify-between text-[9px] text-signal-teal font-bold uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-[11px] text-status-matched font-medium">
                     <span>Matched Problem</span>
-                    <span className="bg-signal-teal/10 px-2 py-0.5 rounded border border-signal-teal/20">{HOMEPAGE_COPY.features.list[0]?.interactiveScore}</span>
+                    <span className="bg-status-matched/10 px-2 py-0.5 rounded font-mono">{HOMEPAGE_COPY.features.list[0]?.interactiveScore}</span>
                   </div>
                   <p className="text-xs text-ink leading-normal">&quot;{HOMEPAGE_COPY.features.list[0]?.interactiveMatch}&quot;</p>
                 </motion.div>
@@ -203,10 +198,10 @@ export default function FeaturesSection() {
         className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center pt-6"
       >
         <div className="lg:order-last space-y-4">
-          <span className="font-mono text-[10px] text-signal-amber tracking-wider font-bold block">
+          <span className="text-xs text-accent font-semibold block">
             {HOMEPAGE_COPY.features.list[1]?.badge}
           </span>
-          <h3 className="text-2xl font-bold text-ink font-display">
+          <h3 className="text-2xl font-semibold text-ink font-serif">
             {HOMEPAGE_COPY.features.list[1]?.title}
           </h3>
           <p className="text-ink-muted text-sm leading-relaxed font-sans">
@@ -214,20 +209,20 @@ export default function FeaturesSection() {
           </p>
         </div>
 
-        <Panel accent="amber" className="p-6 font-mono text-xs select-none">
-          <div className="flex items-center justify-between border-b border-[color:var(--raw-border-subtle)] pb-3 mb-4 text-[10px] text-ink-muted uppercase font-bold tracking-wider">
+        <Panel accent="amber" className="p-6 text-xs select-none">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-4 text-[11px] text-ink-muted font-medium">
             <span>{HOMEPAGE_COPY.features.list[1]?.interactiveTitle}</span>
             <div className="flex gap-1.5">
-              <span className={`w-2 h-2 rounded-full transition-colors duration-500 ${submitMockStage === 0 ? 'bg-signal-amber shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'bg-white/5'}`} />
-              <span className={`w-2 h-2 rounded-full transition-colors duration-500 ${submitMockStage === 1 ? 'bg-signal-teal shadow-[0_0_10px_rgba(45,212,191,0.5)]' : 'bg-white/5'}`} />
-              <span className={`w-2 h-2 rounded-full transition-colors duration-500 ${submitMockStage === 2 ? 'bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-white/5'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${submitMockStage === 0 ? 'bg-accent' : 'bg-ink-muted/20'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${submitMockStage === 1 ? 'bg-status-matched' : 'bg-ink-muted/20'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${submitMockStage === 2 ? 'bg-status-solved' : 'bg-ink-muted/20'}`} />
             </div>
           </div>
 
           <motion.div
             layout
             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-            className="bg-bg-void/80 rounded-xl p-4 border border-[color:var(--raw-border-subtle)] space-y-4 h-[185px] flex flex-col justify-center"
+            className="bg-bg rounded-xl p-4 border border-border space-y-4 h-[185px] flex flex-col justify-center"
           >
             {(HOMEPAGE_COPY.features.list[1]?.stages || []).map((stage, idx) => {
               const isActive = submitMockStage === idx;
@@ -236,7 +231,7 @@ export default function FeaturesSection() {
                   key={idx}
                   className={`transition-all duration-500 ${isActive ? 'opacity-100 scale-100 translate-x-1.5' : 'opacity-25 scale-95 pointer-events-none'}`}
                 >
-                  <span className={`font-bold block text-[9px] uppercase tracking-wider mb-0.5 ${isActive ? 'text-signal-amber' : 'text-ink-muted'}`}>
+                  <span className={`font-semibold block text-[11px] mb-0.5 ${isActive ? 'text-accent' : 'text-ink-muted'}`}>
                     {stage.label}
                   </span>
                   <p className={`text-xs leading-normal ${isActive ? 'text-ink' : 'text-ink-muted'}`}>
@@ -252,10 +247,10 @@ export default function FeaturesSection() {
       {/* Feature 3: Reddit-Style voting */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center pt-6">
         <div className="space-y-4">
-          <span className="font-mono text-[10px] text-signal-amber tracking-wider font-bold block">
+          <span className="text-xs text-accent font-semibold block">
             {HOMEPAGE_COPY.features.list[2]?.badge}
           </span>
-          <h3 className="text-2xl font-bold text-ink font-display">
+          <h3 className="text-2xl font-semibold text-ink font-serif">
             {HOMEPAGE_COPY.features.list[2]?.title}
           </h3>
           <p className="text-ink-muted text-sm leading-relaxed font-sans">
@@ -265,32 +260,32 @@ export default function FeaturesSection() {
 
         {/* Interactive Voting Console Mock */}
         <Panel accent="amber" className="p-6 select-none">
-          <div className="flex items-center justify-between border-b border-[color:var(--raw-border-subtle)] pb-3 mb-5 font-mono text-[10px] text-ink-muted uppercase font-bold tracking-wider">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-5 text-[11px] text-ink-muted font-medium">
             <span>{HOMEPAGE_COPY.features.list[2]?.interactiveTitle}</span>
           </div>
 
-          <div className="p-5 bg-bg-void/60 border border-[color:var(--raw-border-subtle)] rounded-xl flex flex-col gap-3 backdrop-blur-xl">
+          <div className="p-5 bg-bg border border-border rounded-xl flex flex-col gap-3">
             <div className="flex items-start gap-4">
-              <div className="flex flex-col items-center gap-1 shrink-0 font-mono">
+              <div className="flex flex-col items-center gap-1 shrink-0">
                 <button
                   onClick={() => handleMockVote('up')}
-                  className={`w-7 h-7 rounded border flex items-center justify-center cursor-pointer transition-all ${
+                  className={`w-7 h-7 rounded-lg border flex items-center justify-center cursor-pointer transition-all ${
                     mockUpvoted
-                      ? 'bg-amber-500/20 text-brand-amber border-brand-amber/35 shadow-[0_0_10px_rgba(245,158,11,0.15)]'
-                      : 'bg-bg-panel text-ink-muted border-[color:var(--raw-border-subtle)] hover:text-ink'
+                      ? 'bg-accent/10 text-accent border-accent/30'
+                      : 'bg-bg-panel text-ink-muted border-border hover:text-ink'
                   }`}
                 >
                   <ArrowUp className="h-3.5 w-3.5" />
                 </button>
-                <span className={`text-[10px] font-bold ${mockUpvoted ? 'text-brand-amber' : mockDownvoted ? 'text-rose-500' : 'text-ink-muted'}`}>
+                <span className={`text-xs font-semibold font-mono ${mockUpvoted ? 'text-accent' : mockDownvoted ? 'text-danger' : 'text-ink-muted'}`}>
                   {mockScore > 0 ? `+${mockScore}` : mockScore}
                 </span>
                 <button
                   onClick={() => handleMockVote('down')}
-                  className={`w-7 h-7 rounded border flex items-center justify-center cursor-pointer transition-all ${
+                  className={`w-7 h-7 rounded-lg border flex items-center justify-center cursor-pointer transition-all ${
                     mockDownvoted
-                      ? 'bg-rose-500/20 text-rose-500 border-rose-500/35 shadow-[0_0_10px_rgba(239,68,68,0.15)]'
-                      : 'bg-bg-panel text-ink-muted border-[color:var(--raw-border-subtle)] hover:text-ink'
+                      ? 'bg-danger/10 text-danger border-danger/30'
+                      : 'bg-bg-panel text-ink-muted border-border hover:text-ink'
                   }`}
                 >
                   <ArrowUp className="h-3.5 w-3.5 rotate-180" />
@@ -299,15 +294,15 @@ export default function FeaturesSection() {
 
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-bold text-ink leading-none">{HOMEPAGE_COPY.features.list[2]?.solName}</h4>
-                  <span className="text-[8px] font-mono text-signal-teal uppercase bg-signal-teal/10 px-1.5 py-0.5 rounded border border-signal-teal/10">verified</span>
+                  <h4 className="text-sm font-semibold text-ink leading-none">{HOMEPAGE_COPY.features.list[2]?.solName}</h4>
+                  <span className="text-[10px] font-medium text-status-solved uppercase bg-status-solved/10 px-1.5 py-0.5 rounded">verified</span>
                 </div>
                 <p className="text-[11px] text-ink-muted leading-relaxed font-sans">{HOMEPAGE_COPY.features.list[2]?.solDesc}</p>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-[color:var(--raw-border-subtle)]">
-              <span className="font-mono text-[9px] text-signal-amber uppercase tracking-widest font-bold">
+            <div className="pt-2 border-t border-border">
+              <span className="text-xs text-accent font-medium">
                 {HOMEPAGE_COPY.features.list[2]?.reviewsCount}
               </span>
             </div>
