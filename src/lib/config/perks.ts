@@ -22,7 +22,7 @@ export const ROLE_PERKS_CONFIG: Record<string, RolePerks> = {
   reporter: {
     role: 'reporter',
     label: 'Community Reporter',
-    badgeColor: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+    badgeColor: 'text-signal-amber bg-signal-amber/10 border-signal-amber/20',
     rateLimitPerMin: 5,         // Safe rate limiting for general users
     rateLimitPerDay: 50,        // Safe daily limit
     canListSolutions: false,    // Must first list a product to trigger promotion loop
@@ -54,7 +54,7 @@ export const ROLE_PERKS_CONFIG: Record<string, RolePerks> = {
       "⚡ 6x Higher Rate Limits (30 requests/min, 500/day) for heavy usage",
       "🚀 Direct traffic with protocol-safe, verified links pointing to your product website",
       "📢 Automatic Email Blasts sent to all co-signers of a niche the instant you list a fix",
-      "👤 Customize your Builder Bio, personal portfolio, and GitHub URLs directly in MongoDB",
+      "👤 Customize your Builder Bio, personal portfolio, and GitHub links from your dashboard",
       "⭐ Earn the Verified Builder Badge next to your name and listings"
     ]
   },

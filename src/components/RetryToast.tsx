@@ -47,7 +47,7 @@ function ToastItem({ toast, onDismiss }: { toast: RetryToastItem; onDismiss: (id
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -90, opacity: 0 }}
       transition={{ type: 'spring', damping: 18, stiffness: 260 }}
-      className="flex items-center gap-3 pl-4 pr-5 py-3 bg-slate-950/95 border border-amber-500/40 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.55)] backdrop-blur-xl pointer-events-auto"
+      className="flex items-center gap-3 pl-4 pr-5 py-3 bg-bg-void/95 border border-amber-500/40 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.55)] backdrop-blur-xl pointer-events-auto"
     >
       <span className="relative flex h-2.5 w-2.5 shrink-0">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-60" />
@@ -57,11 +57,11 @@ function ToastItem({ toast, onDismiss }: { toast: RetryToastItem; onDismiss: (id
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber-400 font-bold leading-none">
           RETRYING CONNECTION
         </p>
-        <p className="font-mono text-[10px] text-slate-400 mt-1.5 leading-none">
+        <p className="font-mono text-[10px] text-ink-muted mt-1.5 leading-none">
           {toast.context} · Attempt {toast.attempt}/{toast.maxRetries}
         </p>
       </div>
-      <RefreshCw className="h-4 w-4 text-amber-500 animate-spin ml-1" />
+      <RefreshCw className="h-4 w-4 text-signal-amber animate-spin ml-1" />
     </motion.div>
   );
 }

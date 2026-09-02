@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { APP_COPY } from '@/lib/config/copy';
 import { PageScanner } from '@/components/Loader';
 import staticCategories from '@/lib/ai/static-categories';
+import SignalMeter from '@/components/SignalMeter';
 
 interface Cluster {
   id: string;
@@ -66,7 +67,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       <div className="mb-6">
         <Link
           href="/browse"
-          className="inline-flex items-center gap-2 font-mono text-xs text-slate-400 hover:text-slate-100 transition-colors group cursor-pointer"
+          className="inline-flex items-center gap-2 font-mono text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           {APP_COPY.browse.backLink}
@@ -74,36 +75,36 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       </div>
 
       {/* Header */}
-      <div className="mb-12 border-b border-white/5 pb-8">
+      <div className="mb-12 border-b border-[color:var(--raw-border-subtle)] pb-8">
         <div className="flex items-center gap-2 mb-2">
-          <div className="p-2 bg-amber-500/10 rounded-xl inline-flex"><Layers className="h-5 w-5 text-amber-500" /></div>
-          <span className="font-mono text-[10px] tracking-[0.3em] text-amber-500 uppercase font-bold">
+          <div className="p-2 bg-signal-amber/10 rounded-xl inline-flex"><Layers className="h-5 w-5 text-signal-amber" /></div>
+          <span className="font-mono text-[10px] tracking-[0.3em] text-signal-amber uppercase font-bold">
             00 // Market Segment
           </span>
         </div>
-        <h1 className="mt-2 text-3xl sm:text-5xl font-display font-bold italic tracking-tight text-slate-100">
+        <h1 className="mt-2 text-3xl sm:text-5xl font-display font-bold tracking-tight text-ink">
           {activeCategory?.categoryLabel || category.replace('-', ' ')}
         </h1>
-        <p className="mt-3 max-w-3xl text-slate-400 text-sm sm:text-base leading-relaxed">
+        <p className="mt-3 max-w-3xl text-ink-muted text-sm sm:text-base leading-relaxed">
           {activeCategory?.categoryDescription || 'A collection of shared customer frustrations and product gaps.'}
         </p>
       </div>
 
       {/* Clusters List */}
       {isComingSoon ? (
-        <div className="p-10 bg-slate-900/20 shadow-xl glass-card hud-corners-violet max-w-2xl select-none">
-          <div className="p-2.5 bg-white/5 text-slate-600 inline-flex mb-4"><Lock className="h-5 w-5" /></div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-200 italic font-display">
+        <div className="p-10 bg-bg-panel/40 shadow-xl glass-card hud-corners max-w-2xl select-none">
+          <div className="p-2.5 bg-white/5 text-ink-muted inline-flex mb-4"><Lock className="h-5 w-5" /></div>
+          <h2 className="text-xl sm:text-2xl font-bold text-ink font-display">
             {categoryDes || category.replace('-', ' ')} — Coming Soon
           </h2>
-          <p className="text-sm text-slate-400 mt-3 leading-relaxed">
+          <p className="text-sm text-ink-muted mt-3 leading-relaxed">
             We're not collecting problems in this vertical yet. Right now NeedBoard is focused on
             Developer Tools &amp; DX and SaaS &amp; B2B Productivity — report the pain points you
             experience there, and this niche will light up when we expand.
           </p>
           <Link
             href="/browse"
-            className="inline-flex items-center gap-2 font-mono text-xs text-slate-400 hover:text-slate-100 transition-colors group cursor-pointer mt-8"
+            className="inline-flex items-center gap-2 font-mono text-xs text-ink-muted hover:text-ink transition-colors group cursor-pointer mt-8"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             {APP_COPY.browse.backLink}
@@ -114,12 +115,12 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       ) : error ? (
         <div className="text-center py-20 px-4 select-none animate-fade-in max-w-xl mx-auto">
           <AlertTriangle className="mx-auto h-12 w-12 text-red-500 mb-4 animate-pulse" />
-          <h2 className="text-xl font-bold font-sans text-slate-200">Error Loading Opportunities</h2>
-          <p className="text-slate-400 text-xs mt-2 leading-relaxed">{error}</p>
+          <h2 className="text-xl font-bold font-sans text-ink">Error Loading Opportunities</h2>
+          <p className="text-ink-muted text-xs mt-2 leading-relaxed">{error}</p>
           <div className="mt-8 flex gap-4 justify-center">
             <Link
               href="/browse"
-              className="font-mono text-xs font-bold uppercase bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl border border-white/5 text-slate-200 cursor-pointer"
+              className="font-mono text-xs font-bold uppercase bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl border border-[color:var(--raw-border-subtle)] text-ink cursor-pointer"
             >
               Return to Browse
             </Link>
@@ -136,17 +137,10 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
           </div>
         </div>
       ) : clusters.length > 0 ? (
-        <div className="space-y-6">
-          {clusters.map((cluster, idx) => {
-            // Determine a visual "strength indicator" color based on memberCount
-            let strengthColor = 'bg-teal-500/20 text-teal-400 border-teal-500/30';
-            if (cluster.memberCount > 25) {
-              strengthColor = 'bg-red-500/20 text-red-400 border-red-500/30';
-            } else if (cluster.memberCount > 10) {
-              strengthColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-            }
-
-            return (
+        <div className="space-y-4">
+          {(() => {
+            const maxSignal = Math.max(...clusters.map((c) => c.memberCount), 10);
+            return clusters.map((cluster, idx) => (
               <motion.div
                 key={cluster.id}
                 initial={{ opacity: 0, y: 15 }}
@@ -155,35 +149,38 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               >
                 <Link
                   href={`/cluster/${cluster.id}`}
-                  className="group block p-6 bg-slate-900/40 hover:bg-slate-900/70 transition-all duration-300 shadow-xl glass-card hud-corners-violet"
+                  className="group block p-6 bg-bg-panel/40 hover:bg-bg-panel/70 transition-all duration-300 shadow-xl glass-card hud-corners"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                    
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
+                    {/* Signal amplitude */}
+                    <div className="shrink-0">
+                      <SignalMeter value={cluster.memberCount} max={maxSignal} size="md" />
+                    </div>
+
                     {/* Content Section */}
-                    <div className="flex-grow space-y-2">
+                    <div className="flex-grow space-y-2 sm:border-l sm:border-[color:var(--raw-border-subtle)] sm:pl-5">
                       <div className="flex items-center gap-3">
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border ${strengthColor}`}>
-                          Signal Count: {cluster.memberCount}
+                        <span className="font-mono text-[9px] text-ink-muted uppercase tracking-widest">
+                          {cluster.memberCount} signals
                         </span>
-                        
-                        {/* Trend indicator */}
-                        <span className="font-mono text-[9px] text-slate-500 uppercase flex items-center gap-1">
-                          <TrendingUp className="h-3 w-3 text-emerald-500" /> Active
+                        <span className="font-mono text-[9px] text-signal-teal uppercase flex items-center gap-1">
+                          <TrendingUp className="h-3 w-3" /> Active
                         </span>
                       </div>
 
-                      <h2 className="text-lg sm:text-xl font-bold font-sans text-slate-200 group-hover:text-slate-100 transition-colors">
+                      <h2 className="text-lg sm:text-xl font-bold font-sans text-ink group-hover:opacity-90 transition-opacity">
                         "{cluster.canonicalText}"
                       </h2>
 
-                      <p className="font-mono text-[10px] text-slate-500 uppercase tracking-wide">
+                      <p className="font-mono text-[10px] text-ink-muted uppercase tracking-wide">
                         CO-SIGNERS PHRASED THIS IN {cluster.sampleVariants.length} DISTINCT WAYS
                       </p>
                     </div>
 
                     {/* Action Arrow */}
                     <div className="shrink-0 flex items-center justify-end">
-                      <span className="font-mono text-[11px] text-amber-500 group-hover:text-amber-400 flex items-center gap-1 group-hover:translate-x-1 transition-all cursor-pointer">
+                      <span className="font-mono text-[11px] text-signal-amber group-hover:opacity-80 flex items-center gap-1 group-hover:translate-x-1 transition-all cursor-pointer">
                         Details <ChevronRight className="h-4 w-4" />
                       </span>
                     </div>
@@ -191,15 +188,15 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                   </div>
                 </Link>
               </motion.div>
-            );
-          })}
+            ));
+          })()}
         </div>
       ) : (
-        <div className="text-center py-24 border border-dashed border-white/5 max-w-xl mx-auto p-8">
-          <p className="font-mono text-sm text-slate-400">NeedBoard just opened here. Report the first "{categoryDes}" problem and put this vertical on the map.</p>
+        <div className="text-center py-24 border border-dashed border-[color:var(--raw-border-subtle)] max-w-xl mx-auto p-8">
+          <p className="font-mono text-sm text-ink-muted">NeedBoard just opened here. Report the first "{categoryDes}" problem and put this vertical on the map.</p>
           <Link
             href="/submit"
-            className="inline-block mt-6 font-mono text-xs font-bold uppercase bg-amber-500 text-slate-950 px-4 py-2 rounded-lg hover:bg-amber-600 transition-all"
+            className="inline-block mt-6 font-mono text-xs font-bold uppercase bg-signal-amber text-slate-950 px-4 py-2 rounded-lg hover:opacity-90 transition-all"
           >
             Submit First Problem
           </Link>

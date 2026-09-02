@@ -168,7 +168,7 @@ export default function Header() {
           {isSignedIn && isAdmin && (
             <Link
               href="/admin/dashboard"
-              className={`transition-colors duration-200 hover:text-slate-100 text-red-400/90 hover:text-red-400 ${
+              className={`transition-colors duration-200 hover:text-ink text-red-400/90 hover:text-red-400 ${
                 isActive('/admin/dashboard') ? 'text-red-400 border-b border-red-500/50 pb-1' : ''
               }`}
             >
@@ -191,7 +191,7 @@ export default function Header() {
               <Search className="h-5 w-5" />
             </Link>
             {isSignedIn && (
-              <Link href="/dashboard" className={`p-1 ${isActive('/dashboard') ? 'text-amber-500/80' : ''}`} title="Dashboard">
+              <Link href="/dashboard" className={`p-1 ${isActive('/dashboard') ? 'text-signal-amber/80' : ''}`} title="Dashboard">
                 <LayoutDashboard className="h-5 w-5" />
               </Link>
             )}

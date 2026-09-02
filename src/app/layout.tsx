@@ -71,7 +71,7 @@ export default function RootLayout({
             {children}
           </main>
 
-          <footer className="relative z-10 border-t border-white/5 bg-slate-950/40 py-6 text-center font-mono text-[10px] tracking-widest text-slate-500 uppercase">
+          <footer className="relative z-10 border-t border-[color:var(--raw-border-subtle)] bg-bg-void/40 py-6 text-center font-mono text-[10px] tracking-widest text-ink-muted uppercase">
             © 2026 NeedBoard. ALL INDIVIDUAL VOICES RESONATE IN COLLECTIVE SIGNAL.
           </footer>
         </body>

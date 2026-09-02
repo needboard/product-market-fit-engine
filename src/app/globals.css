@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Full terminal console: the sans token is remapped to mono so font-sans
-     utility classes inherit the monospace treatment everywhere */
-  --font-sans: var(--font-geist-mono);
+  /* Proportional sans for actual reading (body copy, paragraphs) — mono is
+     reserved for genuinely data-ish text (labels, counts, IDs, code-like
+     strings), opted into explicitly via font-mono/.input-terminal. Mono-for-
+     everything was legible for short UI labels but actively hurt readability
+     at paragraph length, reading as a terminal dump instead of prose. */
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   /* Big display headings: tech grotesk (Space Grotesk) */
   --font-display: var(--font-space-grotesk);
@@ -14,7 +17,7 @@
 }
 
 body {
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Reserve the vertical scrollbar's space on every page, whether or not that page's
@@ -168,6 +171,34 @@ html {
 .glass-card {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+}
+
+/* Ticket-stub perforation: a dashed tear-line with punched half-circle
+   notches on each edge, used inside a panel to separate a problem's
+   canonical statement from its evidence — the "problem ticket" motif for
+   a marketplace that matches real problems with real builders. The notch
+   color is hardcoded to bg-void because it must match whatever sits BEHIND
+   the panel, not the panel surface itself (punches through, doesn't stack). */
+.ticket-perforation {
+  position: relative;
+  height: 0;
+  border-top: 2px dashed var(--raw-border-subtle);
+}
+.ticket-perforation::before,
+.ticket-perforation::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--raw-bg-void);
+}
+.ticket-perforation::before {
+  left: -0.75rem;
+}
+.ticket-perforation::after {
+  right: -0.75rem;
 }
 
 /* Hide standard system cursor globally on fine-pointer devices when custom cursor mounts */

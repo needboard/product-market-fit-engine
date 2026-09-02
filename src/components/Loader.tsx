@@ -77,12 +77,12 @@ export function PageScanner({ message = 'Analyzing...', size = 'md' }: LoaderPro
         <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 bg-clip-text text-transparent">
           {'█'.repeat(filled)}
         </span>
-        <span className="text-slate-700">{'░'.repeat(BAR_CHARS - filled)}</span>
+        <span className="text-ink-muted">{'░'.repeat(BAR_CHARS - filled)}</span>
         {/* <span className="text-amber-500 animate-pulse">▊</span> */}
       </div>
 
       {displayMessage && (
-        <p className="mt-3 font-mono text-[9px] tracking-[0.2em] text-slate-400 font-bold uppercase text-center animate-pulse max-w-md leading-relaxed">
+        <p className="mt-3 font-mono text-[9px] tracking-[0.2em] text-ink-muted font-bold uppercase text-center animate-pulse max-w-md leading-relaxed">
           {displayMessage}
         </p>
       )}
