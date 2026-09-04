@@ -9,7 +9,7 @@ export class LLMService implements ILLMService {
 
   async classifyProblem(
     text: string,
-    existingCategories: { id: string; label: string; description: string }[]
+    existingCategories?: { id: string; label: string; description: string }[]
   ): Promise<ClassificationResult> {
     if (process.env.NEXT_PUBLIC_E2E_TESTING === 'true') {
       const lower = text.toLowerCase();
@@ -186,7 +186,7 @@ Example response for INVALID (out of scope) input:
     const anthropic = new Anthropic({ apiKey: this.config.anthropicApiKey });
     const response = await anthropic.messages.create({
       model: this.config.anthropicCompletionModel || 'claude-3-5-haiku-20241022',
-      max_tokens: 1024,
+      max_tokens: 100,
       system: system,
       messages: [{ role: 'user', content: user }],
       temperature: 0.2,
@@ -213,7 +213,7 @@ Example response for INVALID (out of scope) input:
           { role: 'user', content: user },
         ],
         temperature: 0.2,
-        max_tokens: 1024,
+        max_tokens: 100,
       }),
     });
 
@@ -244,7 +244,7 @@ Example response for INVALID (out of scope) input:
           { role: 'user', content: user },
         ],
         temperature: 0.2,
-        max_tokens: 1024,
+        max_tokens: 100,
       }),
     });
 
@@ -274,7 +274,7 @@ Example response for INVALID (out of scope) input:
           { role: 'user', content: user },
         ],
         temperature: 0.2,
-        max_tokens: 1024
+        max_tokens: 1000
       }),
     });
 

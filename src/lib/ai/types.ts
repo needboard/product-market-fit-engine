@@ -43,5 +43,5 @@ export interface IEmbeddingService {
 }
 
 export interface ILLMService {
-  classifyProblem(text: string, existingCategories: { id: string; label: string; description: string }[]): Promise<ClassificationResult>;
+  classifyProblem(text: string, existingCategories?: { id: string; label: string; description: string }[]): Promise<ClassificationResult>;
 }

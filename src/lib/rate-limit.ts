@@ -84,6 +84,10 @@ if (process.env.NODE_ENV === 'test' || (!process.env.UPSTASH_REDIS_REST_URL && !
   redis = Redis.fromEnv();
 }
 
+// Role lookup cache — avoids a Mongo read on every submit (60s TTL)
+const roleCache = new Map<string, { minLimit: number; dayLimit: number; expires: number }>();
+const ROLE_CACHE_TTL = 60_000;
+
 // -------------------------------------------------------------
 // ⚙️ SLIDING WINDOW HELPER FOR A SPECIFIC WINDOW
 // -------------------------------------------------------------
@@ -146,7 +150,7 @@ async function checkWindow(
 }
 
 // -------------------------------------------------------------
-// 🚀 DUAL-WINDOW RATE LIMITER (MINUTE + DAILY)
+// 🚀 DUAL-WINDOW RATE LIMITER (MINUTE + DAILY) — single Upstash round-trip
 // -------------------------------------------------------------
 export async function rateLimit(identifier: string): Promise<{
   success: boolean;
@@ -154,51 +158,86 @@ export async function rateLimit(identifier: string): Promise<{
   remaining: number;
   reset: number;
 }> {
-  // 1. Resolve role-based quotas dynamically! 🚀
+  // 1. Resolve role-based quotas dynamically (cached 60s) 🚀
   let minLimit = Number(process.env.RATE_LIMIT_MAX_REQUESTS || 5);
   let dayLimit = Number(process.env.RATE_LIMIT_DAILY_MAX_REQUESTS || 50);
 
-  // If identifier is a Clerk User ID, check MongoDB user role!
   if (identifier && identifier.startsWith('user_')) {
-    try {
-      const user = await getUserByClerkId(identifier);
-      if (user) {
-        const perks = ROLE_PERKS_CONFIG[user.role];
-        if (perks) {
-          minLimit = perks.rateLimitPerMin;
-          dayLimit = perks.rateLimitPerDay;
-          console.log(`[RateLimit] Dynamic Quota matched for ${user.name} (${perks.label}): ${minLimit}/min, ${dayLimit}/day.`);
+    const cached = roleCache.get(identifier);
+    if (cached && cached.expires > Date.now()) {
+      minLimit = cached.minLimit;
+      dayLimit = cached.dayLimit;
+    } else {
+      try {
+        const user = await getUserByClerkId(identifier);
+        if (user) {
+          const perks = ROLE_PERKS_CONFIG[user.role];
+          if (perks) {
+            minLimit = perks.rateLimitPerMin;
+            dayLimit = perks.rateLimitPerDay;
+            console.log(`[RateLimit] Dynamic Quota matched for ${user.name} (${perks.label}): ${minLimit}/min, ${dayLimit}/day.`);
+            roleCache.set(identifier, { minLimit, dayLimit, expires: Date.now() + ROLE_CACHE_TTL });
+          }
         }
+      } catch (dbError) {
+        console.warn(`[RateLimit] Failed to fetch user role for ${identifier}, falling back to defaults.`, dbError);
       }
-    } catch (dbError) {
-      console.warn(`[RateLimit] Failed to fetch user role for ${identifier}, falling back to defaults.`, dbError);
     }
   }
 
-  // 2. Check Minute Limit
+  // 2. Check both windows in ONE pipeline (single Upstash RTT instead of two)
   const minWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 60000);
-  
-  const minResult = await checkWindow(identifier, 'min', minLimit, minWindowMs);
-  if (!minResult.success) {
-    return minResult;
-  }
+  const dayWindowMs = 24 * 60 * 60 * 1000;
 
-  // 3. Check Daily Limit
-  const dayWindowMs = 24 * 60 * 60 * 1000; // 24 hours
-  
-  const dayResult = await checkWindow(identifier, 'day', dayLimit, dayWindowMs);
-  if (!dayResult.success) {
-    return dayResult;
-  }
+  try {
+    const now = Date.now();
+    const minMember = `${now}_${Math.random().toString(36).substring(2, 7)}`;
+    const dayMember = `${now}_${Math.random().toString(36).substring(2, 7)}`;
+    const minKey = `rate_limit:min:${identifier}`;
+    const dayKey = `rate_limit:day:${identifier}`;
 
-  // If both succeed, return the smaller remaining count (to be safe)
-  // and the minute reset time (since that's the next expected rate limit update event).
-  return {
-    success: true,
-    limit: minLimit,
-    remaining: Math.min(minResult.remaining, dayResult.remaining),
-    reset: minResult.reset,
-  };
+    const p = redis.pipeline();
+    p.zremrangebyscore(minKey, 0, now - minWindowMs);
+    p.zadd(minKey, { score: now, member: minMember });
+    p.zcard(minKey);
+    p.zrange(minKey, 0, 0);
+    p.expire(minKey, Math.ceil(minWindowMs / 1000));
+    p.zremrangebyscore(dayKey, 0, now - dayWindowMs);
+    p.zadd(dayKey, { score: now, member: dayMember });
+    p.zcard(dayKey);
+    p.zrange(dayKey, 0, 0);
+    p.expire(dayKey, Math.ceil(dayWindowMs / 1000));
+
+    const results: any[] = await p.exec();
+    const minCount = results[2] as number;
+    const minOldestArr = results[3] as string[];
+    const dayCount = results[7] as number;
+    const dayOldestArr = results[8] as string[];
+
+    if (minCount > minLimit) {
+      // Minute blocked — clean up both members so blocked tries don't accumulate
+      await redis.zrem(minKey, minMember);
+      await redis.zrem(dayKey, dayMember);
+      const oldestTs = minOldestArr?.[0] ? Number(minOldestArr[0].split('_')[0]) : now - minWindowMs;
+      return { success: false, limit: minLimit, remaining: 0, reset: oldestTs + minWindowMs };
+    }
+    if (dayCount > dayLimit) {
+      // Daily blocked — keep the minute count (already succeeded), remove daily member only
+      await redis.zrem(dayKey, dayMember);
+      const oldestTs = dayOldestArr?.[0] ? Number(dayOldestArr[0].split('_')[0]) : now - dayWindowMs;
+      return { success: false, limit: dayLimit, remaining: 0, reset: oldestTs + dayWindowMs };
+    }
+
+    return {
+      success: true,
+      limit: minLimit,
+      remaining: Math.min(minLimit - minCount, dayLimit - dayCount),
+      reset: now + minWindowMs,
+    };
+  } catch (error) {
+    console.error(`[RateLimit] Combined window check failed for ${identifier}:`, error);
+    return { success: true, limit: minLimit, remaining: 1, reset: Date.now() + minWindowMs };
+  }
 }
 
 export function handleRateLimitResponse(resetTime: number) {

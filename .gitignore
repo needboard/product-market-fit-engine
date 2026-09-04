@@ -53,3 +53,7 @@ test-results/**
 test-results
 playwright-report
 ete-testing.md
+
+# opencode skills (vendored, project-only)
+/.opencode/
+task.md

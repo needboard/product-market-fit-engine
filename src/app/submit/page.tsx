@@ -156,6 +156,8 @@ export default function Home() {
     setDraft(null);
     setSuccessResult(null);
 
+    // One UUID per logical draft attempt — retries reuse the same key so the server can dedupe
+    const draftIdemKey = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`);
     try {
       const response = await fetchWithRetry('/api/problems', {
         method: 'POST',
@@ -164,6 +166,7 @@ export default function Home() {
           text: inputText,
           draft: true,
         }),
+        idempotencyKey: draftIdemKey,
         onRetry: (attempt) => showRetryToast(attempt, 'signal lost, re-analyzing your problem'),
       });
 
@@ -200,6 +203,8 @@ export default function Home() {
       description: draft.proposedCategoryDescription
     };
 
+    // One UUID per logical finalize attempt — retries reuse the same key
+    const finalizeIdemKey = (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`);
     try {
       const response = await fetchWithRetry('/api/problems', {
         method: 'POST',
@@ -212,6 +217,7 @@ export default function Home() {
           confirmedCategoryDescription: matchingCategoryObj.description,
           confirmedCanonicalText: customCanonical,
         }),
+        idempotencyKey: finalizeIdemKey,
         onRetry: (attempt) => showRetryToast(attempt, 'signal lost, re-publishing your report'),
       });
 

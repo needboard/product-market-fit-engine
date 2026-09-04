@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { auth } from '@/lib/clerk-server';
 import { validateQuery } from '@/lib/validation';
 import { rateLimit, handleRateLimitResponse } from '@/lib/rate-limit';
 import { embeddingService, llmService } from '@/lib/ai';
 import { 
-  getClusters, 
-  getCategories, 
-  searchClusters, 
   upsertCluster, 
   insertProblem,
   logMetric,
@@ -18,10 +16,21 @@ import {
   MongoProblemDocument as ProblemRecord 
 } from '@/lib/models/schema';
 import { isFocusedCategory } from '@/lib/ai/static-categories';
+import { acquireIdempotency, completeIdempotency } from '@/lib/idempotency';
 
 const SIMILARITY_THRESHOLD = Number(process.env.NEXT_PUBLIC_SIMILARITY_THRESHOLD || 0.70);
 
 export async function POST(req: NextRequest) {
+  // Idempotency setup — one composite key per logical submit (all retries share it)
+  let compositeKey: string | null = null;
+  const complete = async (status: number, body: any) => {
+    if (compositeKey) await completeIdempotency(compositeKey, status, body);
+  };
+  const reply = async (body: any, status = 200) => {
+    await complete(status, body);
+    return NextResponse.json(body, { status });
+  };
+
   try {
     // 1. Authenticate user
     const { userId } = await auth();
@@ -29,11 +38,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized', message: 'You must be signed in to submit a problem.' }, { status: 401 });
     }
 
+    // 1b. Idempotency check — before rate-limit so replays don't burn quota
+    const rawIdem = req.headers.get('Idempotency-Key') || req.headers.get('idempotency-key');
+    if (rawIdem) {
+      compositeKey = `${userId}:${rawIdem}`;
+      const idem = await acquireIdempotency(compositeKey, userId);
+      if (idem.action === 'replay') {
+        return NextResponse.json(idem.body, { status: idem.statusCode });
+      }
+      if (idem.action === 'processing') {
+        return NextResponse.json({ error: 'Conflict', message: 'Request already processing, please wait' }, { status: 409 });
+      }
+    }
+
     // 2. Robust user-based rate limiting 🛡️
-    // By keying strictly on userId, the user's rate limits seamlessly follow them across 
-    // Cellular, Wi-Fi, and VPNs, while keeping coffee shop shared-IP lockouts completely solved!
     const limitCheck = await rateLimit(`submit_${userId}`);
     if (!limitCheck.success) {
+      // Don't poison the idempotency key with a transient 429 — allow retry with same key after window
+      if (compositeKey) {
+        try { const db = await getDb(); await (db.collection('idempotency_keys') as any).deleteOne({ key: compositeKey }); } catch {}
+        compositeKey = null; // prevent catch-block from storing 429
+      }
       return handleRateLimitResponse(limitCheck.reset);
     }
 
@@ -43,12 +68,9 @@ export async function POST(req: NextRequest) {
 
     const validation = validateQuery(text);
     if (!validation.isValid) {
-      // Return 400 Bad Request with character truncation notice
-      return NextResponse.json({ 
-        error: 'Query rejected', 
-        message: validation.message,
-        charCount: validation.charCount 
-      }, { status: 400 });
+      const body = { error: 'Query rejected', message: validation.message, charCount: validation.charCount };
+      await complete(400, body);
+      return NextResponse.json(body, { status: 400 });
     }
 
     // 4. Generate embedding for the input text
@@ -63,39 +85,47 @@ export async function POST(req: NextRequest) {
     // --- CASE A: DRAFT MODE ---
     // Return proposed categorization/clustering without writing anything to DB
     if (draft) {
-      await logMetric('submission', text);
+      // Fire-and-forget: don't block the response on metrics (runs after response via after())
+      try { after(() => logMetric('submission', text).catch(() => {})); } catch { logMetric('submission', text).catch(() => {}); }
 
       if (isMatch) {
-        return NextResponse.json({
-          mode: 'match',
+        const body = {
+          mode: 'match' as const,
           similarity: topMatch.score,
           cluster: topMatch,
           proposedCategory: topMatch.category,
           proposedCategoryLabel: topMatch.categoryLabel,
           proposedCategoryDescription: topMatch.categoryDescription,
           proposedCanonicalText: topMatch.canonicalText,
-        });
+        };
+        await complete(200, body);
+        return NextResponse.json(body);
       }
 
       // No match - trigger LLM to suggest category and canonical description
-      const existingCategories = await getCategories();
-      const classification = await llmService.classifyProblem(text, existingCategories);
+      const classification = await llmService.classifyProblem(text);
 
       if (classification.isValid === false) {
-        return NextResponse.json({
+        const body = {
           error: 'Rejected',
           message: classification.rejectionReason || 'Input rejected. Please write a meaningful, real-world, product-solvable problem.',
-        }, { status: 400 });
+        };
+        await complete(400, body);
+        return NextResponse.json(body, { status: 400 });
       }
 
-      return NextResponse.json({
-        mode: 'new',
-        similarity: topMatch ? topMatch.score : 0,
-        proposedCategory: classification.category,
-        proposedCategoryLabel: classification.categoryLabel,
-        proposedCategoryDescription: classification.categoryDescription,
-        proposedCanonicalText: classification.canonicalText,
-      });
+      {
+        const body = {
+          mode: 'new' as const,
+          similarity: topMatch ? topMatch.score : 0,
+          proposedCategory: classification.category,
+          proposedCategoryLabel: classification.categoryLabel,
+          proposedCategoryDescription: classification.categoryDescription,
+          proposedCanonicalText: classification.canonicalText,
+        };
+        await complete(200, body);
+        return NextResponse.json(body);
+      }
     }
 
     // --- CASE B: FINALIZE MODE (WRITE TO PINECONE) ---
@@ -106,9 +136,6 @@ export async function POST(req: NextRequest) {
       // Join existing cluster
       const matchedCluster = topMatch;
       
-      // Apply fast, atomic updates to MongoDB (Uncapped variants, 0 embedding cost! 🚀)
-      const existingUserIds = matchedCluster.userIds || [];
-      const userAlreadyJoined = existingUserIds.includes(userId);
       const isCreator = matchedCluster.creatorId == userId;
 
       if (isCreator) {
@@ -116,38 +143,32 @@ export async function POST(req: NextRequest) {
       }
     
       const db = await getDb();
-      // const mongoCluster = await db.collection('clusters').findOne({ id: matchedCluster.id });
-      let appendedVariant = false;
-
-      
-      // Existing document update: apply fast, atomic changes
-      const updateOps: any = {
-        $set: { lastUpdatedAt: nowStr }
-      };
-      
-      if (!userAlreadyJoined) {
-        updateOps.$inc = { memberCount: 1, variantCount: 1 };
-        updateOps.$push = { userIds: userId };
-      }
-      
-      if (!matchedCluster.sampleVariants.includes(text)) {
-        if (!updateOps.$push) updateOps.$push = {};
-        updateOps.$push.sampleVariants = text;
-        appendedVariant = true;
-      }
-      
+      // Atomically add user + variant with $addToSet (no duplicates even under concurrent retries)
       await db.collection('clusters').updateOne(
         { id: matchedCluster.id },
-        updateOps
+        {
+          $set: { lastUpdatedAt: nowStr },
+          $addToSet: { userIds: userId, sampleVariants: text },
+        }
       );
-      
+      // Re-read authoritative state and fix denormalized counters (race-safe)
+      const fresh = await db.collection('clusters').findOne({ id: matchedCluster.id }) as any;
+      const correctMemberCount = (fresh?.userIds || []).length || (fresh?.memberCount ?? matchedCluster.memberCount);
+      const correctVariantCount = (fresh?.sampleVariants || []).length || (fresh?.variantCount ?? matchedCluster.variantCount);
+      if (fresh && (fresh.memberCount !== correctMemberCount || fresh.variantCount !== correctVariantCount)) {
+        await db.collection('clusters').updateOne(
+          { id: matchedCluster.id },
+          { $set: { memberCount: correctMemberCount, variantCount: correctVariantCount } }
+        );
+        fresh.memberCount = correctMemberCount;
+        fresh.variantCount = correctVariantCount;
+      }
       const updatedCluster: ClusterRecord = {
-        ...matchedCluster,
-        memberCount: matchedCluster.memberCount + (userAlreadyJoined ? 0 : 1),
-        sampleVariants: appendedVariant ? [...matchedCluster.sampleVariants, text] : matchedCluster.sampleVariants,
+        ...(fresh ?? matchedCluster),
+        memberCount: correctMemberCount,
+        variantCount: correctVariantCount,
         lastUpdatedAt: nowStr,
-        userIds: userAlreadyJoined ? existingUserIds : [...existingUserIds, userId],
-      };
+      } as ClusterRecord;
 
       // Create raw problem record in MongoDB 🚀
       const problemRecord: ProblemRecord = {
@@ -160,12 +181,11 @@ export async function POST(req: NextRequest) {
       };
       await insertProblem(problemRecord, queryEmbedding);
 
-      return NextResponse.json({
-        success: true,
-        joinedCluster: true,
-        cluster: updatedCluster,
-        problemId,
-      });
+      {
+        const body = { success: true, joinedCluster: true as const, cluster: updatedCluster, problemId };
+        await complete(200, body);
+        return NextResponse.json(body);
+      }
     } else {
       // Seed a new cluster
       const clusterId = `cluster_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -176,7 +196,10 @@ export async function POST(req: NextRequest) {
       const finalCanonicalText = confirmedCanonicalText || text;
 
       // 1. Generate embedding for the clean canonical text (better centroid representation)
-      const canonicalEmbedding = await embeddingService.getEmbedding(finalCanonicalText);
+      // Reuse the query embedding when canonical === original to avoid a second OpenAI call
+      const canonicalEmbedding = finalCanonicalText === text
+        ? queryEmbedding
+        : await embeddingService.getEmbedding(finalCanonicalText);
       
       // 2. Insert static taxonomy into Pinecone
       const newClusterForPinecone: ClusterRecord = {
@@ -226,36 +249,24 @@ export async function POST(req: NextRequest) {
       };
       await insertProblem(problemRecord, queryEmbedding);
 
-      return NextResponse.json({
-        success: true,
-        joinedCluster: false,
-        cluster: unifiedCluster,
-        problemId,
-      });
+      {
+        const body = { success: true, joinedCluster: false as const, cluster: unifiedCluster, problemId };
+        await complete(200, body);
+        return NextResponse.json(body);
+      }
     }
 
   } catch (error: any) {
-    // 1. Log the actual error object or error.cause
     console.error('Error handling problem submission:', error);
 
-    // 2. Access error.cause directly (with optional chaining)
     if (error?.cause === 'AlreadySubmit') {
-      return NextResponse.json(
-        { 
-          error: 'Client Error', 
-          message: error.message || 'An error occurred during submission.' 
-        }, 
-        { status: 400 }
-      );
+      const body = { error: 'Client Error', message: error.message || 'An error occurred during submission.' };
+      await complete(400, body);
+      return NextResponse.json(body, { status: 400 });
     }
 
-    // 3. Fallback for server/unexpected errors
-    return NextResponse.json(
-      { 
-        error: 'Internal Server Error', 
-        message: 'An error occurred during submission.' 
-      }, 
-      { status: 500 }
-    );
+    const body = { error: 'Internal Server Error', message: 'An error occurred during submission.' };
+    await complete(500, body);
+    return NextResponse.json(body, { status: 500 });
   }
 }
