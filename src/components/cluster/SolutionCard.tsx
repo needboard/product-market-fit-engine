@@ -89,7 +89,7 @@ export default function SolutionCard({
       setRevText('');
       setRevName('');
       setShowReviewForm(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setReviewError(sanitizeError(err, 'Could not post your product review.'));
     } finally {

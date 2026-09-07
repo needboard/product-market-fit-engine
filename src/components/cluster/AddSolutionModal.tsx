@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { X, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { APP_COPY } from '@/lib/config/copy';
 import { ButtonSpinner } from '@/components/Loader';
 import { fetchWithRetry } from '@/lib/fetch-retry';
 import { sanitizeError } from '@/lib/sanitize-error';
+import { useModalFocus } from '@/lib/useModalFocus';
 import type { Cluster, Solution } from './types';
 
 interface AddSolutionModalProps {
@@ -26,6 +27,10 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  useModalFocus(onClose, dialogRef);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +67,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
 
       onSuccess(data.cluster);
       setSuccess(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError(sanitizeError(err, 'We could not publish your product solution listing.'));
     } finally {
@@ -88,7 +93,12 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
             viewports and reads as "touching the header"). */}
         <div className="absolute inset-x-0 top-16 bottom-0 flex items-center justify-center p-4">
           <motion.div
-            className="relative panel-surface rounded-2xl max-w-lg w-full max-h-full overflow-y-auto p-6 sm:p-8 shadow-xl text-left"
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
+            className="relative panel-surface rounded-2xl max-w-lg w-full max-h-full overflow-y-auto p-6 sm:p-8 shadow-xl text-left outline-none"
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -112,7 +122,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 <div className="mx-auto w-12 h-12 bg-status-solved/10 border border-status-solved/30 rounded-full flex items-center justify-center text-status-solved mb-4">
                   <Check className="h-6 w-6" />
                 </div>
-                <h2 className="text-xl font-semibold font-serif text-ink">
+                <h2 id={titleId} className="text-xl font-semibold font-serif text-ink">
                   {isEditing ? "Solution Updated Successfully!" : APP_COPY.solutions.successHeader}
                 </h2>
                 <p className="text-sm text-ink-muted leading-relaxed max-w-sm mx-auto">
@@ -137,7 +147,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
                 animate={{ opacity: 1 }}
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-ink font-serif">
+                  <h3 id={titleId} className="text-lg font-semibold text-ink font-serif">
                     {isEditing ? "Update Your Solution Listing" : APP_COPY.solutions.formTitle}
                   </h3>
                   <p className="text-sm text-ink-muted mt-1 leading-relaxed">

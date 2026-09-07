@@ -7,7 +7,7 @@ test.describe('Navigation & Browsing Flow', () => {
 
     // 1. Visit Home Page
     await page.goto('/');
-    await expect(page.locator('span:has-text("NeedBoard")')).toBeVisible();
+    await expect(page.locator('header span:has-text("NeedBoard")')).toBeVisible();
 
     // 2. Click Browse Link in Header
     const browseLink = page.locator('header nav a:has-text("Browse")');

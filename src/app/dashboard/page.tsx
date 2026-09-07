@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth, useUser, SignInButton } from '@/lib/clerk';
 import { Lock } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
@@ -24,40 +24,44 @@ export default function UserDashboard() {
   const [totalUpvotes, setTotalUpvotes] = useState(0);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [activeTab, setActiveTab] = useState<'reporter' | 'builder'>('reporter');
+
+  const loadDashboard = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+    try {
+      const res = await fetch('/api/user/dashboard');
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data.profile);
+        setPerks(data.perks);
+        setReporterProblems(data.reporter.problems || []);
+        setSupportedClusters(data.reporter.supportedClusters || []);
+        setBuilderSolutions(data.builder.solutions || []);
+        setReviewFeed(data.builder.reviews || []);
+        setTotalUpvotes(data.builder.totalUpvotesScore || 0);
+
+        if (data.profile.role === 'builder' || data.profile.role === 'admin') {
+          setActiveTab('builder');
+        }
+      } else {
+        const errorData = await res.json();
+        console.error('Failed to load dashboard:', errorData);
+        setLoadError(true);
+      }
+    } catch (err) {
+      console.error('Error fetching dashboard payload:', err);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isAuthLoaded || !isSignedIn) return;
-
-    async function loadDashboard() {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/user/dashboard');
-        if (res.ok) {
-          const data = await res.json();
-          setProfile(data.profile);
-          setPerks(data.perks);
-          setReporterProblems(data.reporter.problems || []);
-          setSupportedClusters(data.reporter.supportedClusters || []);
-          setBuilderSolutions(data.builder.solutions || []);
-          setReviewFeed(data.builder.reviews || []);
-          setTotalUpvotes(data.builder.totalUpvotesScore || 0);
-
-          if (data.profile.role === 'builder' || data.profile.role === 'admin') {
-            setActiveTab('builder');
-          }
-        } else {
-          const errorData = await res.json();
-          console.error('Failed to load dashboard:', errorData);
-        }
-      } catch (err) {
-        console.error('Error fetching dashboard payload:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadDashboard();
-  }, [isAuthLoaded, isSignedIn]);
+  }, [isAuthLoaded, isSignedIn, loadDashboard]);
 
   if (!isAuthLoaded) {
     return <PageScanner message="Resolving secure credentials..." />;
@@ -80,6 +84,21 @@ export default function UserDashboard() {
             Sign In to System Console
           </button>
         </SignInButton>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-xl text-center py-32 px-4 space-y-4">
+        <h1 className="text-2xl font-serif font-semibold text-ink">Console Unavailable</h1>
+        <p className="text-ink-muted text-sm">We could not load your workspace data. Please try again.</p>
+        <button
+          onClick={() => loadDashboard()}
+          className="h-11 px-8 text-sm font-semibold bg-accent text-white rounded-lg hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+        >
+          Retry
+        </button>
       </div>
     );
   }

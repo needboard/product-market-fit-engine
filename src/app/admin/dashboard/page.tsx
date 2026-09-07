@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useUser } from '@/lib/clerk';
 import Link from 'next/link';
 import { ArrowLeft, ShieldAlert } from 'lucide-react';
@@ -21,33 +21,33 @@ export default function AdminDashboardPage() {
   const role = (user?.publicMetadata?.role as string) || 'user';
   const isAdmin = role === 'admin';
 
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to retrieve administrative data.');
+      }
+      setStats(data.stats);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !isAdmin) return;
-
-    async function fetchStats() {
-      try {
-        const res = await fetch('/api/admin/stats');
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || 'Failed to retrieve administrative data.');
-        }
-        setStats(data.stats);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchStats();
-  }, [isLoaded, isSignedIn, isAdmin]);
+  }, [isLoaded, isSignedIn, isAdmin, fetchStats]);
 
-  // A reassignment triggers a small re-embedding cost (two embeddings) —
-  // reflected locally so the cost dashboard doesn't need a full refetch.
+  // A reassignment incurs a small re-embedding cost whose exact size depends
+  // on the reassigned text's character count (server-side only) — rather
+  // than approximate it locally with a duplicated cost constant, just
+  // refetch, so totalCostEstimated/totalTransactions/countsByType (read by
+  // StatsOverview and CostBreakdown) stay authoritative.
   const handleCostIncurred = () => {
-    setStats((prev) => prev ? {
-      ...prev,
-      costsByType: { ...prev.costsByType, 'me-too': prev.costsByType['me-too'] + 0.00000002 * 2 },
-    } : prev);
+    fetchStats();
   };
 
   if (!isLoaded) {

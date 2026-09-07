@@ -21,7 +21,12 @@ export default function ThemeToggle() {
     if (current === 'dark' || current === 'light') {
       setTheme(current);
     } else {
-      setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      // No saved preference — derive from the OS, and reflect it onto <html>
+      // too (not persisted to localStorage, so it isn't locked in as an
+      // explicit user choice; a later OS-preference change still applies).
+      const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', preferred);
+      setTheme(preferred);
     }
   }, []);
 

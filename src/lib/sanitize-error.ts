@@ -4,9 +4,9 @@
  * page (vote, me-too, solution submit, review submit) — one shared version
  * now that those handlers live in separate components.
  */
-export function sanitizeError(error: any, defaultMessage: string): string {
-  const msg = error?.message || '';
-  const name = error?.name || '';
+export function sanitizeError(error: unknown, defaultMessage: string): string {
+  const { message: msg = '', name = '' } =
+    error instanceof Error ? error : { message: '', name: '' };
 
   if (msg.toLowerCase().includes('try again in')) {
     return msg;

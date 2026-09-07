@@ -173,7 +173,7 @@ export default function SearchPage() {
                       key={cluster.id}
                       href={`/cluster/${cluster.id}`}
                       accent="amber"
-                      className={`group flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-4 ${isStrongMatch ? 'status-stripe-solved' : 'status-stripe-open'}`}
+                      className={`group flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-4 ${isStrongMatch ? 'status-stripe-matched' : 'status-stripe-open'}`}
                     >
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
@@ -184,7 +184,6 @@ export default function SearchPage() {
                             <SignalMeter
                               value={similarityPct}
                               max={100}
-                              solved={isStrongMatch ? 1 : 0}
                               size="sm"
                             />
                             <span className="text-xs text-ink-muted">

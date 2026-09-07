@@ -74,7 +74,7 @@ export default function ActiveSignalsSection({ trending, loadingNiches }: { tren
         <PageScanner message="Scanning database signals..." size="md" />
       ) : (
         <div className="text-center py-16 rounded-xl border border-dashed border-border text-ink-muted text-sm">
-          Nobody's reported a problem yet — yours could be the first thing builders see.
+          Nobody&apos;s reported a problem yet — yours could be the first thing builders see.
         </div>
       )}
     </motion.section>

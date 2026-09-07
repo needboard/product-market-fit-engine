@@ -136,7 +136,7 @@ export default function BrowsePage() {
       ) : (
         <div className="text-center py-24 border border-dashed border-border rounded-xl p-8 max-w-xl mx-auto">
           <p className="text-sm text-ink-muted">No active categories found.</p>
-          <p className="text-xs text-ink-muted mt-2">Submit a problem on the home page or click "Seed Data" to populate sample clusters.</p>
+          <p className="text-xs text-ink-muted mt-2">Submit a problem on the home page or click &quot;Seed Data&quot; to populate sample clusters.</p>
           <Link
             href="/submit"
             className="inline-block mt-6 text-xs font-semibold uppercase bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Flame, Check, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { APP_COPY } from '@/lib/config/copy';
@@ -23,8 +23,8 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
   const [showPhrasingInput, setShowPhrasingInput] = useState(false);
   const [meTooError, setMeTooError] = useState<string | null>(null);
 
-  const handleMeTooSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleMeTooSubmit = async (e?: FormEvent) => {
+    e?.preventDefault();
     setSubmitting(true);
     setMeTooError(null);
 
@@ -43,7 +43,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
       onSuccess(data.cluster);
       setCustomPhrasing('');
       setShowPhrasingInput(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setMeTooError(sanitizeError(err, 'Could not register your co-sign feedback.'));
     } finally {
@@ -91,7 +91,7 @@ export default function MeTooCard({ clusterId, voted, isCreator, onSuccess }: Me
                 <div className="space-y-2">
                   <button
                     data-testid="me-too-button"
-                    onClick={() => handleMeTooSubmit({ preventDefault: () => {} } as any)}
+                    onClick={() => handleMeTooSubmit()}
                     disabled={submitting}
                     className="w-full h-11 bg-accent text-white text-sm font-medium rounded-lg active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 disabled:opacity-40 disabled:pointer-events-none"
                   >

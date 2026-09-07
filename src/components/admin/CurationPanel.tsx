@@ -44,23 +44,31 @@ export default function CurationPanel({ onCostIncurred }: { onCostIncurred: () =
       return;
     }
 
+    const controller = new AbortController();
+    const requestedClusterId = selectedClusterId;
+
     async function loadProblems() {
       setLoadingProblems(true);
       try {
-        const res = await fetch(`/api/admin/problems?clusterId=${selectedClusterId}`);
+        const res = await fetch(
+          `/api/admin/problems?clusterId=${encodeURIComponent(requestedClusterId)}`,
+          { signal: controller.signal },
+        );
         if (res.ok) {
           const data = await res.json();
           const problemsList = data.problems || [];
-          setProblemsCache((prev) => ({ ...prev, [selectedClusterId]: problemsList }));
+          setProblemsCache((prev) => ({ ...prev, [requestedClusterId]: problemsList }));
           setRawProblems(problemsList);
         }
       } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return;
         console.error('Failed to load raw problems:', err);
       } finally {
-        setLoadingProblems(false);
+        if (!controller.signal.aborted) setLoadingProblems(false);
       }
     }
     loadProblems();
+    return () => controller.abort();
   }, [selectedClusterId, problemsCache]);
 
   const forceRefreshProblems = async () => {
@@ -74,6 +82,8 @@ export default function CurationPanel({ onCostIncurred }: { onCostIncurred: () =
         setProblemsCache((prev) => ({ ...prev, [selectedClusterId]: problemsList }));
         setRawProblems(problemsList);
         setAlertModal({ isOpen: true, type: 'success', title: 'Sync Completed!', message: 'The curation list has been successfully synchronized with live database records.' });
+      } else {
+        setAlertModal({ isOpen: true, type: 'error', title: 'Sync Failed', message: 'Could not synchronize complaints with active database records.' });
       }
     } catch (err) {
       console.error('Failed to refresh problems:', err);

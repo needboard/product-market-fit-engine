@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Award, CheckCircle, Globe, Loader2, Lock, Save, Zap } from 'lucide-react';
 import AlertModal from '@/components/AlertModal';
@@ -16,11 +16,18 @@ interface PerksAndPortfolioProps {
 }
 
 export default function PerksAndPortfolio({ profile, perks, onProfileUpdate }: PerksAndPortfolioProps) {
-  const [bioInput, setBioInput] = useState('');
-  const [githubInput, setGithubInput] = useState('');
-  const [websiteInput, setWebsiteInput] = useState('');
+  const [bioInput, setBioInput] = useState(profile.customBio ?? '');
+  const [githubInput, setGithubInput] = useState(profile.githubUrl ?? '');
+  const [websiteInput, setWebsiteInput] = useState(profile.websiteUrl ?? '');
   const [savingProfile, setSavingProfile] = useState(false);
   const [alertModal, setAlertModal] = useState({ isOpen: false, type: 'success' as 'success' | 'error' | 'info', title: '', message: '' });
+
+  // Profile can arrive after mount (parent fetches it), so resync once it does.
+  useEffect(() => {
+    setBioInput(profile.customBio ?? '');
+    setGithubInput(profile.githubUrl ?? '');
+    setWebsiteInput(profile.websiteUrl ?? '');
+  }, [profile.customBio, profile.githubUrl, profile.websiteUrl]);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,8 +52,9 @@ export default function PerksAndPortfolio({ profile, perks, onProfileUpdate }: P
       } else {
         throw new Error(data.message || 'Unable to update profile.');
       }
-    } catch (err: any) {
-      setAlertModal({ isOpen: true, type: 'error', title: 'Update Failed', message: err.message || 'An error occurred while saving your portfolio changes.' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '';
+      setAlertModal({ isOpen: true, type: 'error', title: 'Update Failed', message: message || 'An error occurred while saving your portfolio changes.' });
     } finally {
       setSavingProfile(false);
     }

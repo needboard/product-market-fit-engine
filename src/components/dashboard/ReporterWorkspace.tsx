@@ -61,7 +61,7 @@ export default function ReporterWorkspace({ reporterProblems, supportedClusters 
           </div>
         ) : (
           <div className="text-center py-12 rounded-lg border border-dashed border-border text-ink-muted text-sm">
-            You haven't reported any frustrations yet.
+            You haven&apos;t reported any frustrations yet.
           </div>
         )}
       </Panel>
@@ -97,7 +97,7 @@ export default function ReporterWorkspace({ reporterProblems, supportedClusters 
 
                 <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                   <span className="text-[11px] text-ink-muted">
-                    {cluster.variantCount} variations reported
+                    {cluster.variantCount ?? 0} variations reported
                   </span>
                   <span className="text-xs font-medium text-accent flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     Inspect <ChevronRight className="h-3 w-3" />
@@ -108,7 +108,7 @@ export default function ReporterWorkspace({ reporterProblems, supportedClusters 
           </div>
         ) : (
           <div className="text-center py-12 rounded-lg border border-dashed border-border text-ink-muted text-sm">
-            You haven't co-signed any niches yet.
+            You haven&apos;t co-signed any niches yet.
           </div>
         )}
       </Panel>

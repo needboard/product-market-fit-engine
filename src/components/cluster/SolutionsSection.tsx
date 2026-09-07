@@ -58,7 +58,7 @@ export default function SolutionsSection({ cluster, userId, onClusterUpdate }: S
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to submit vote.');
       onClusterUpdate(data.cluster);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setAlertModal({ isOpen: true, type: 'error', title: 'Vote Failed', message: sanitizeError(err, 'Failed to record your vote.') });
     } finally {
@@ -81,7 +81,7 @@ export default function SolutionsSection({ cluster, userId, onClusterUpdate }: S
       if (!res.ok) throw new Error(data.message || 'Failed to delete solution.');
       onClusterUpdate(data.cluster);
       setAlertModal({ isOpen: true, type: 'success', title: 'Solution Deleted', message: 'Your listed product solution has been successfully removed from this problem group.' });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setAlertModal({ isOpen: true, type: 'error', title: 'Deletion Failed', message: sanitizeError(err, 'Failed to delete the listed product.') });
     } finally {
