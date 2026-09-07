@@ -7,7 +7,7 @@ test.describe('Navigation & Browsing Flow', () => {
 
     // 1. Visit Home Page
     await page.goto('/');
-    await expect(page.locator('span:has-text("NeedBoard")')).toBeVisible();
+    await expect(page.locator('header span:has-text("NeedBoard")')).toBeVisible();
 
     // 2. Click Browse Link in Header
     const browseLink = page.locator('header nav a:has-text("Browse")');
@@ -26,7 +26,8 @@ test.describe('Navigation & Browsing Flow', () => {
     await expect(page).toHaveURL(/\/cluster\/cluster-e2e-calendar-sync/);
 
     // 5. Verify details are visible on cluster page
-    await expect(page.locator('text=CLUSTER REFERENCE ID: cluster-e2e-calendar-sync')).toBeVisible();
+    await expect(page.locator('text=Reference ID')).toBeVisible();
+    await expect(page.locator('text=cluster-e2e-calendar-sync')).toBeVisible();
 
     // 6. Go back to browse using the back button link
     const backLink = page.locator('a:has-text("Back to Niche (SaaS & B2B Productivity)")').first();

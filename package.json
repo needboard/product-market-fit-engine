@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:integration:real": "NEXT_PUBLIC_APP_URL=http://localhost:3000 npx tsx scripts/integration/real-llm.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.5",

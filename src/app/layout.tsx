@@ -1,29 +1,38 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google';
+import { Inter, Fraunces, Geist_Mono } from 'next/font/google';
 import { ClerkProvider } from '@/lib/clerk';
 import Header from '@/components/Header';
-import AmbientCanvas from '@/components/AmbientCanvas';
+import Footer from '@/components/Footer';
+import { getSiteUrl } from '@/lib/site-url';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
+const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
+const fraunces = Fraunces({ variable: '--font-fraunces', subsets: ['latin'], weight: ['500', '600', '700'] });
+const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const playfair = Playfair_Display({
-  variable: '--font-playfair',
-  subsets: ['latin'],
-  style: ['normal', 'italic'],
-});
+const SITE_URL = getSiteUrl();
+const SITE_DESCRIPTION = 'A public marketplace of real, everyday problems reported by developers and teams. Builders come here to see exactly what\'s broken and who\'s waiting for a fix.';
 
 export const metadata: Metadata = {
-  title: 'NeedBoard — Collective Problem Clustering',
-  description: 'See the noise become a pattern. A platform where scattered frustrations cluster into visible collective signal.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'NeedBoard — Collective Problem Clustering',
+    template: '%s | NeedBoard',
+  },
+  description: SITE_DESCRIPTION,
+  keywords: ['product market fit', 'problem discovery', 'startup ideas', 'developer pain points', 'saas ideas', 'build in public'],
+  openGraph: {
+    type: 'website',
+    url: SITE_URL,
+    siteName: 'NeedBoard',
+    title: 'NeedBoard — Collective Problem Clustering',
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NeedBoard — Collective Problem Clustering',
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
@@ -32,25 +41,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-    >
+    <ClerkProvider>
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
+        suppressHydrationWarning
+        className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col bg-slate-950 text-slate-100 selection:bg-amber-500/30 selection:text-slate-100">
-          {/* Custom Ambient Background & Interactive Cursor */}
-          <AmbientCanvas />
-          {/* <CustomCursor /> */}
-          
+        <head>
+          {/* Blocking (pre-hydration) theme read — a raw script tag here runs
+              synchronously while the browser parses <head>, before <body> is
+              ever painted. Light is the CSS default, so this only needs to
+              act when the user explicitly chose dark (or explicitly chose
+              light, overriding an OS dark preference). */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `try{var t=localStorage.getItem('needboard-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}catch(e){}`,
+            }}
+          />
+        </head>
+        <body className="min-h-full flex flex-col bg-bg text-ink selection:bg-accent/20 selection:text-ink" suppressHydrationWarning>
           <Header />
-          <main className="flex-grow flex flex-col relative z-10">
-            {children}
-          </main>
-
-          <footer className="relative z-10 border-t border-white/5 bg-slate-950/40 py-6 text-center font-mono text-[10px] tracking-widest text-slate-500 uppercase">
-            © 2026 NeedBoard. ALL INDIVIDUAL VOICES RESONATE IN COLLECTIVE SIGNAL.
-          </footer>
+          <main className="flex-grow flex flex-col relative z-10">{children}</main>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

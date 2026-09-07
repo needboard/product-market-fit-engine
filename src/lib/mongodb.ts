@@ -28,18 +28,14 @@ const globalWithMongo = global as typeof globalThis & {
 
 if (process.env.NODE_ENV === 'test' || !MONGODB_URI) {
   // Mock fallback logic
-} else if (process.env.NODE_ENV === 'development') {
-  // In development/test mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
+} else {
+  // Use a global variable so the connection is preserved across HMR reloads
+  // and across Vercel lambda warm invocations (avoids reconnect on every request).
   if (!globalWithMongo._mongoClientPromise) {
     client = new MongoClient(MONGODB_URI || 'mongodb://localhost:27017/p-x1');
     globalWithMongo._mongoClientPromise = client.connect();
   }
   clientPromise = globalWithMongo._mongoClientPromise;
-} else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(MONGODB_URI || 'mongodb://localhost:27017/p-x1');
-  clientPromise = client.connect();
 }
 
 // Shared mock database instance so that fallback state is preserved across request cycles
@@ -111,7 +107,7 @@ function createMockMongoDb(): any {
     }
 
     return {
-      async find(filter: any) {
+      find(filter: any) {
         let list = mockStore[name];
         // Simple filter matching
         if (filter && typeof filter === 'object') {
@@ -172,8 +168,12 @@ function createMockMongoDb(): any {
         return { deletedCount: lengthBefore - mockStore[name].length, acknowledged: true };
       },
       
-      async updateOne(filter: any, update: any) {
-        const item = await this.findOne(filter);
+      async updateOne(filter: any, update: any, options: any = {}) {
+        let item = await this.findOne(filter);
+        if (!item && options?.upsert) {
+          item = { _id: `mock_id_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`, ...filter };
+          mockStore[name].push(item);
+        }
         if (item && update) {
           if (update.$set) {
             Object.assign(item, update.$set);
@@ -189,6 +189,13 @@ function createMockMongoDb(): any {
               item[key].push(val);
             });
           }
+          if (update.$addToSet) {
+            Object.entries(update.$addToSet).forEach(([key, val]) => {
+              if (!item[key]) item[key] = [];
+              const toAdd = val && typeof val === 'object' && '$each' in val ? (val as any).$each : [val];
+              toAdd.forEach((v: any) => { if (!item[key].includes(v)) item[key].push(v); });
+            });
+          }
           if (update.$pull) {
             Object.entries(update.$pull).forEach(([key, val]) => {
               if (item[key]) {
@@ -200,11 +207,20 @@ function createMockMongoDb(): any {
         return { matchedCount: item ? 1 : 0, modifiedCount: item ? 1 : 0, acknowledged: true };
       },
 
+      async findOneAndUpdate(filter: any, update: any, options: any = {}) {
+        const item = await this.findOne(filter);
+        if (!item) return { value: null };
+        const before = { ...item, userIds: [...(item.userIds || [])], sampleVariants: [...(item.sampleVariants || [])] };
+        await this.updateOne(filter, update);
+        const after = await this.findOne(filter);
+        return { value: options.returnDocument === 'before' ? before : after, ok: 1 };
+      },
+
       async countDocuments() {
         return mockStore[name].length;
       },
 
-      async aggregate(pipeline: any[]) {
+      aggregate(pipeline: any[]) {
         let list = [...mockStore[name]];
         
         // Handle Vector Search stage in memory! 🚀
@@ -226,7 +242,7 @@ function createMockMongoDb(): any {
         }
 
         return {
-          async toArray() {
+          toArray: async () => {
             return list;
           }
         };

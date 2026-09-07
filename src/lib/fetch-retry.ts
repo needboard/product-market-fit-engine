@@ -10,6 +10,7 @@ export interface FetchRetryOptions extends RequestInit {
   initialDelayMs?: number;
   timeoutMs?: number; // Request timeout limit (defaults to 8000ms)
   onRetry?: (attempt: number, error: Error) => void; // Optional progress callback
+  idempotencyKey?: string; // If set, sends Idempotency-Key header (retries reuse same key)
 }
 
 /**
@@ -21,10 +22,12 @@ export async function fetchWithRetry(
   options: FetchRetryOptions = {},
   timeout: number = 20000
 ): Promise<Response> {
-  // Auto-escalate the default timeout for heavy batch actions like seeding or admin stats
+  // Auto-escalate the default timeout for heavy batch actions
   let defaultTimeout = timeout;
   if (url.includes('/api/seed') || url.includes('/api/admin/stats')) {
     defaultTimeout = 60000; // 🚀 60 seconds comfortable breathing room
+  } else if (url.includes('/api/problems')) {
+    defaultTimeout = 45000; // free-tier LLM (nemotron 550B) can queue 10-30s — avoid false timeouts
   }
 
   const {
@@ -32,8 +35,16 @@ export async function fetchWithRetry(
     initialDelayMs = 1000,
     timeoutMs = defaultTimeout,
     onRetry,
+    idempotencyKey,
     ...fetchOptions
   } = options;
+
+  // Inject Idempotency-Key header if provided (retries automatically reuse it)
+  if (idempotencyKey) {
+    const headers = new Headers(fetchOptions.headers as HeadersInit | undefined);
+    if (!headers.has('Idempotency-Key')) headers.set('Idempotency-Key', idempotencyKey);
+    (fetchOptions as any).headers = headers;
+  }
 
   let lastError: Error | null = null;
 

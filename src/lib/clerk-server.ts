@@ -2,24 +2,35 @@ import { auth as clerkAuth, currentUser as clerkCurrentUser } from '@clerk/nextj
 import { headers, cookies } from 'next/headers';
 
 export async function auth() {
-  if (process.env.NEXT_PUBLIC_E2E_TESTING === 'true') {
-    const h = await headers();
-    const c = await cookies();
-    const e2eUserId = h.get('x-e2e-user-id') || c.get('e2e_user_id')?.value;
-    
-    if (e2eUserId) {
-      return {
-        userId: e2eUserId,
-        protect: () => {},
-        has: () => true,
-      };
+  if (process.env.NEXT_PUBLIC_E2E_TESTING === 'true' || process.env.INTEGRATION_TESTING === 'true') {
+    try {
+      const h = await headers();
+      const c = await cookies();
+      const e2eUserId = h.get('x-e2e-user-id') || c.get('e2e_user_id')?.value;
+      if (e2eUserId) {
+        return {
+          userId: e2eUserId,
+          protect: () => {},
+          has: () => true,
+        };
+      }
+    } catch {
+      // Outside a request scope (e.g. direct handler invocation in integration tests)
+      // — fall back to the hardcoded real Clerk test user when INTEGRATION_TESTING is set.
+      if (process.env.INTEGRATION_TESTING === 'true') {
+        return {
+          userId: 'user_3GrnnHQd2g7XpULXr77bN4gtR0G',
+          protect: async () => {},
+          has: () => true,
+        };
+      }
     }
   }
   return clerkAuth();
 }
 
 export async function currentUser() {
-  if (process.env.NEXT_PUBLIC_E2E_TESTING === 'true') {
+  if (process.env.NEXT_PUBLIC_E2E_TESTING === 'true' || process.env.INTEGRATION_TESTING === 'true') {
     const h = await headers();
     const c = await cookies();
     const e2eUserId = h.get('x-e2e-user-id') || c.get('e2e_user_id')?.value;

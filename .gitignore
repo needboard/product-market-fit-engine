@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# coding agents
+.claude/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -50,3 +53,7 @@ test-results/**
 test-results
 playwright-report
 ete-testing.md
+
+# opencode skills (vendored, project-only)
+/.opencode/
+task.md
