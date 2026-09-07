@@ -72,7 +72,7 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[2147483646] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[2147483646]">
         <motion.div
           className="absolute inset-0 bg-ink/40"
           initial={{ opacity: 0 }}
@@ -81,15 +81,21 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
           onClick={onClose}
         />
 
-        <motion.div
-          className="relative panel-surface rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-xl overflow-hidden text-left"
-          initial={{ opacity: 0, scale: 0.96, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 8 }}
-          transition={{ type: 'spring', stiffness: 450, damping: 28 }}
-        >
-          <button
-            onClick={onClose}
+        {/* Centering region starts below the sticky header (h-16) so the
+            modal always keeps a fixed, predictable gap from the topbar,
+            instead of an emergent margin from centering in the full
+            viewport (which shrinks toward zero at high zoom / short
+            viewports and reads as "touching the header"). */}
+        <div className="absolute inset-x-0 top-16 bottom-0 flex items-center justify-center p-4">
+          <motion.div
+            className="relative panel-surface rounded-2xl max-w-lg w-full max-h-full overflow-y-auto p-6 sm:p-8 shadow-xl text-left"
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ type: 'spring', stiffness: 450, damping: 28 }}
+          >
+            <button
+              onClick={onClose}
             className="absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink rounded-lg hover:bg-ink/5 cursor-pointer transition-colors"
           >
             <X className="h-4 w-4" />
@@ -243,7 +249,8 @@ export default function AddSolutionModal({ clusterId, editingSolution, onClose, 
               </motion.form>
             )}
           </AnimatePresence>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </AnimatePresence>
   );

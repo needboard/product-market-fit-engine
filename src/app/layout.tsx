@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Fraunces, Geist_Mono } from 'next/font/google';
 import { ClerkProvider } from '@/lib/clerk';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { getSiteUrl } from '@/lib/site-url';
 import './globals.css';
 
@@ -61,9 +62,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col bg-bg text-ink selection:bg-accent/20 selection:text-ink" suppressHydrationWarning>
           <Header />
           <main className="flex-grow flex flex-col relative z-10">{children}</main>
-          <footer className="relative z-10 border-t border-border py-6 text-center text-xs tracking-wide text-ink-muted">
-            © 2026 NeedBoard. All individual voices resonate in collective signal.
-          </footer>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>
