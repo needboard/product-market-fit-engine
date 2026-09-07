@@ -1,181 +1,138 @@
 @import "tailwindcss";
 
+/* Editorial Console palette: raw values on plain custom properties (not
+   inside @theme) so [data-theme] on <html> can swap them at runtime — the
+   @theme inline tokens below just point at these via var(), one indirection
+   layer down, so every utility class built from them stays theme-reactive. */
+:root {
+  --raw-bg: #faf9f7;
+  --raw-bg-panel: #ffffff;
+  --raw-ink: #1b1c1f;
+  --raw-ink-muted: #6e6e76;
+  --raw-border: rgba(27, 28, 31, 0.11);
+  --raw-accent: #b74a26;
+  --raw-accent-soft: rgba(183, 74, 38, 0.1);
+  --raw-status-open: #b74a26;
+  --raw-status-matched: #2b5c7a;
+  --raw-status-solved: #2f7d5c;
+  --raw-danger: #b3261e;
+  --raw-scrollbar-track: rgba(27, 28, 31, 0.05);
+}
+
+:root[data-theme='dark'] {
+  --raw-bg: #121214;
+  --raw-bg-panel: #191a1d;
+  --raw-ink: #ededef;
+  --raw-ink-muted: #96969e;
+  --raw-border: rgba(237, 237, 239, 0.1);
+  --raw-accent: #e2703a;
+  --raw-accent-soft: rgba(226, 112, 58, 0.14);
+  --raw-status-open: #e2703a;
+  --raw-status-matched: #5b94b3;
+  --raw-status-solved: #4caf82;
+  --raw-danger: #e5484d;
+  --raw-scrollbar-track: rgba(237, 237, 239, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --raw-bg: #121214;
+    --raw-bg-panel: #191a1d;
+    --raw-ink: #ededef;
+    --raw-ink-muted: #96969e;
+    --raw-border: rgba(237, 237, 239, 0.1);
+    --raw-accent: #e2703a;
+    --raw-accent-soft: rgba(226, 112, 58, 0.14);
+    --raw-status-open: #e2703a;
+    --raw-status-matched: #5b94b3;
+    --raw-status-solved: #4caf82;
+    --raw-danger: #e5484d;
+    --raw-scrollbar-track: rgba(237, 237, 239, 0.06);
+  }
+}
+
 @theme inline {
-  /* Full terminal console: the sans token is remapped to mono so font-sans
-     utility classes inherit the monospace treatment everywhere */
-  --font-sans: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
   --font-mono: var(--font-geist-mono);
-  /* Big display headings: tech grotesk (Space Grotesk) */
-  --font-display: var(--font-space-grotesk);
-  
-  --color-brand-amber: #f59e0b;
-  --color-brand-coral: #ef4444;
-  --color-brand-teal: #14b8a6;
+
+  --color-bg: var(--raw-bg);
+  --color-bg-panel: var(--raw-bg-panel);
+  --color-ink: var(--raw-ink);
+  --color-ink-muted: var(--raw-ink-muted);
+  --color-accent: var(--raw-accent);
+  --color-status-open: var(--raw-status-open);
+  --color-status-matched: var(--raw-status-matched);
+  --color-status-solved: var(--raw-status-solved);
+  --color-danger: var(--raw-danger);
+  --color-border: var(--raw-border);
 }
 
 body {
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Reserve the vertical scrollbar's space on every page, whether or not that page's
-   content is tall enough to need one. Without this, navigating between a page that
-   needs a scrollbar and one that doesn't changes the available content width by the
-   scrollbar's width, which visibly shifts any horizontally-centered (mx-auto) content
-   sideways on every such navigation. */
-/* Always reserve the vertical scrollbar's track, whether or not the current page's
-   content is tall enough to need it. Without this, navigating between a page that
-   needs a scrollbar and one that doesn't changes the available content width by the
-   scrollbar's width, which visibly shifts any horizontally-centered (mx-auto) content
-   sideways. scrollbar-gutter is unreliable on the root <html> element across engines,
-   so this uses the older, universally-supported overflow-y: scroll instead. */
+/* Reserve the vertical scrollbar's track on every page, whether or not the
+   page needs one — otherwise navigating between a tall and a short page
+   shifts centered content sideways by the scrollbar's width. */
 html {
   overflow-y: scroll;
 }
 
-/* Terminal scrollbars — square corners everywhere */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(245, 158, 11, 0.4) rgb(2 6 23 / 0.6);
+  scrollbar-color: var(--raw-ink-muted) var(--raw-scrollbar-track);
 }
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  border-radius: 0;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: rgb(2 6 23 / 0.6);
-  border-radius: 0;
+  background: var(--raw-scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(245, 158, 11, 0.35);
+  background: color-mix(in srgb, var(--raw-ink-muted) 45%, transparent);
   border: none;
-  border-radius: 0;
+  border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.55);
-  border-radius: 0;
-}
-::-webkit-scrollbar-corner {
-  background: rgb(2 6 23 / 0.6);
-  border-radius: 0;
+  background: color-mix(in srgb, var(--raw-ink-muted) 65%, transparent);
 }
 
-/* CRT scanline overlay (fixed above content, pointer-transparent) */
-.scanlines {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.025) 0px,
-    rgba(255, 255, 255, 0.025) 1px,
-    transparent 1px,
-    transparent 3px
-  );
+/* Status stripe: the one signature motif carried over from the old design —
+   a thin left-border color bar on problem/solution cards indicating where
+   a thing stands (open / matched to a cluster / solved). Informative, not
+   decorative — no glow, no animation. */
+.status-stripe-open {
+  border-left: 3px solid var(--raw-status-open);
+}
+.status-stripe-matched {
+  border-left: 3px solid var(--raw-status-matched);
+}
+.status-stripe-solved {
+  border-left: 3px solid var(--raw-status-solved);
 }
 
-/* HUD corner brackets for instrument panels — color varies per page via --hud-c */
-.hud-corners {
-  position: relative;
-  --hud-c: rgba(245, 158, 11, 0.65);
-}
-.hud-corners-teal {
-  position: relative;
-  --hud-c: rgba(45, 212, 191, 0.65);
-}
-.hud-corners-violet {
-  position: relative;
-  --hud-c: rgba(139, 92, 246, 0.65);
-}
-.hud-corners-coral {
-  position: relative;
-  --hud-c: rgba(239, 68, 68, 0.65);
-}
-.hud-corners-emerald {
-  position: relative;
-  --hud-c: rgba(16, 185, 129, 0.65);
-}
-.hud-corners-cyan {
-  position: relative;
-  --hud-c: rgba(6, 182, 212, 0.65);
-}
-.hud-corners::before,
-.hud-corners-teal::before,
-.hud-corners-violet::before,
-.hud-corners-coral::before,
-.hud-corners-emerald::before,
-.hud-corners-cyan::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--hud-c), var(--hud-c)) top left / 14px 1px,
-    linear-gradient(var(--hud-c), var(--hud-c)) top left / 1px 14px,
-    linear-gradient(var(--hud-c), var(--hud-c)) top right / 14px 1px,
-    linear-gradient(var(--hud-c), var(--hud-c)) top right / 1px 14px,
-    linear-gradient(var(--hud-c), var(--hud-c)) bottom left / 14px 1px,
-    linear-gradient(var(--hud-c), var(--hud-c)) bottom left / 1px 14px,
-    linear-gradient(var(--hud-c), var(--hud-c)) bottom right / 14px 1px,
-    linear-gradient(var(--hud-c), var(--hud-c)) bottom right / 1px 14px;
-  background-repeat: no-repeat;
+/* Flat, hairline-bordered surface — the only "panel" treatment in the
+   system. No blur, no glow shadow, no corner brackets. */
+.panel-surface {
+  background: var(--raw-bg-panel);
+  border: 1px solid var(--raw-border);
 }
 
-/* Custom animated gradient backgrounds */
-.text-gradient {
-  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #14b8a6 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.border-glow {
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.2);
-}
-
-/* Terminal-style data-entry surfaces (all inputs, textareas, selects) */
-.input-terminal {
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  background-color: rgb(2 6 23 / 0.8);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 0;
-  color: rgb(226 232 240);
+/* Terminal-style data-entry surfaces (inputs, textareas, selects) */
+.input-field {
+  background: var(--raw-bg-panel);
+  border: 1px solid var(--raw-border);
+  border-radius: 0.5rem;
+  color: var(--raw-ink);
   outline: none;
-  transition: border-color 200ms, box-shadow 200ms, background-color 200ms;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
-
-.input-terminal::placeholder {
-  color: rgb(71 85 105);
-  text-transform: none;
-  letter-spacing: normal;
+.input-field::placeholder {
+  color: var(--raw-ink-muted);
 }
-
-.input-terminal:focus {
-  border-color: rgb(245 158 11 / 0.6);
-  box-shadow: 0 0 20px rgb(245 158 11 / 0.18);
-  background-color: rgb(2 6 23 / 0.95);
+.input-field:focus {
+  border-color: var(--raw-accent);
+  box-shadow: 0 0 0 3px var(--raw-accent-soft);
 }
-
-.input-terminal-teal:focus {
-  border-color: rgb(45 212 191 / 0.6);
-  box-shadow: 0 0 20px rgb(20 184 166 / 0.2);
-}
-
-/* Glass card surface — frosted panels over the ambient canvas */
-.glass-card {
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-}
-
-/* Hide standard system cursor globally on fine-pointer devices when custom cursor mounts */
-@media (hover: hover) and (pointer: fine) {
-  .has-custom-cursor,
-  .has-custom-cursor * {
-    cursor: none !important;
-  }
-}
-
-

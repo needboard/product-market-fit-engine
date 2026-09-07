@@ -123,7 +123,7 @@ export function UserButton(props: any) {
       <button 
         onClick={handleLogout} 
         data-testid="user-button-mock"
-        className="font-mono text-[10px] tracking-widest bg-slate-800 hover:bg-slate-700 text-slate-100 px-3 py-1.5 rounded transition-all cursor-pointer border border-white/10"
+        className="font-mono text-[10px] tracking-widest bg-bg-panel hover:opacity-80 text-ink px-3 py-1.5 rounded transition-all cursor-pointer border border-white/10"
       >
         Sign Out (Mock)
       </button>

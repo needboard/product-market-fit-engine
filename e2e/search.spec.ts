@@ -20,7 +20,7 @@ test.describe('Semantic Search Flow', () => {
     const resultCard = page.locator('a[href="/cluster/cluster-e2e-flaky-tests"]');
     await expect(resultCard).toBeVisible();
     await expect(resultCard).toContainText('Flaky local testing setups');
-    await expect(resultCard).toContainText('Match Score:');
+    await expect(resultCard).toContainText('% match');
   });
 
   test('should show empty/no results state for unrelated queries', async ({ page }) => {
