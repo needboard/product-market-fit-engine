@@ -17,9 +17,10 @@ interface FooterLinkGroup {
 
 const LINK_GROUPS: FooterLinkGroup[] = [
   {
-    title: 'Explore',
+    title: 'Navigate',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'Explore', href: '/explore' },
       { label: 'Browse Problems', href: '/browse' },
       { label: 'Search', href: '/search' },
     ],

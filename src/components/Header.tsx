@@ -76,6 +76,14 @@ export default function Header() {
             Home
           </Link>
           <Link
+            href="/explore"
+            className={`transition-colors duration-150 hover:text-ink ${
+              isActive('/explore') ? 'text-ink font-medium' : ''
+            }`}
+          >
+            Explore
+          </Link>
+          <Link
             href="/submit"
             className={`transition-colors duration-150 hover:text-ink ${
               isActive('/submit') ? 'text-ink font-medium' : ''

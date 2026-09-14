@@ -25,6 +25,7 @@ export interface ClusterRecord {
   lastUpdatedAt: string;
   userIds?: string[];
   solutions?: Solution[];
+  sourceUrl?: string;
 }
 
 export interface ProblemRecord {
@@ -174,6 +175,7 @@ async function joinMongoDataToClusters(clusters: ClusterRecord[]): Promise<Clust
         cluster.userIds = Array.isArray(dynData.userIds) ? dynData.userIds : cluster.userIds;
         cluster.createdAt = dynData.createdAt || cluster.createdAt;
         cluster.lastUpdatedAt = dynData.lastUpdatedAt || cluster.lastUpdatedAt;
+        cluster.sourceUrl = dynData.sourceUrl || cluster.sourceUrl;
       }
     }
   } catch (error) {
