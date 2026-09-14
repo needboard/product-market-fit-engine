@@ -17,9 +17,10 @@ interface FooterLinkGroup {
 
 const LINK_GROUPS: FooterLinkGroup[] = [
   {
-    title: 'Explore',
+    title: 'Navigate',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'Explore', href: '/explore' },
       { label: 'Browse Problems', href: '/browse' },
       { label: 'Search', href: '/search' },
     ],
@@ -42,10 +43,10 @@ interface ContactLink {
 // Order matters here (Abhishek's channels first), no names attached to
 // either cluster of three links.
 const CONTACT_LINKS: ContactLink[] = [
-  { label: 'Email', href: 'mailto:agblion9@gmail.com', icon: Mail },
+  { label: 'Email - Abhishek', href: 'mailto:agblion9@gmail.com', icon: Mail },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/abhishek-gupta-ab377b305', icon: LinkedinIcon },
   { label: 'X', href: 'https://x.com/manyfacess14', icon: XIcon },
-  { label: 'Email', href: 'mailto:sundaramsinghsdnr@gmail.com', icon: Mail },
+  { label: 'Email - Sundaram', href: 'mailto:sundaramsinghsdnr@gmail.com', icon: Mail },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/sundaram-singh04', icon: LinkedinIcon },
   { label: 'X', href: 'https://x.com/sundaram_011', icon: XIcon },
 ];
