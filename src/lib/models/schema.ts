@@ -19,7 +19,8 @@ export interface MongoClusterDocument {
   creatorId?: string;          // 🚀 Clerk User ID of the original reporter who created/seeded the cluster
   createdAt: string;           // Timestamp
   lastUpdatedAt: string;       // Timestamp
-  
+  sourceUrl?: string;          // Optional link to where this problem was originally sourced (Reddit thread, X post, etc.) — set manually during curation/seeding, not user-submitted
+
   // 🚀 MongoDB Atlas Vector Search field
   embedding?: number[];        // The 1,536-dimensional vector centroid
 

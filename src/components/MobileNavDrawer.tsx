@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Home, PlusCircle, Layers, Search, LayoutDashboard, ShieldCheck, X } from 'lucide-react';
+import { Home, Compass, PlusCircle, Layers, Search, LayoutDashboard, ShieldCheck, X } from 'lucide-react';
 import { useModalFocus } from '@/lib/useModalFocus';
 
 interface NavItem {
@@ -26,6 +26,7 @@ interface MobileNavDrawerProps {
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/explore', label: 'Explore', icon: Compass },
   { href: '/submit', label: 'Submit', icon: PlusCircle },
   { href: '/browse', label: 'Browse', icon: Layers },
   { href: '/search', label: 'Search', icon: Search },

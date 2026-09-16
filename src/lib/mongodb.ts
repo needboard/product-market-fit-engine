@@ -797,6 +797,25 @@ export async function getUserByClerkId(userId: string): Promise<MongoUserDocumen
 }
 
 /**
+ * Records an email lead captured by a content gate (e.g. the Explore page's
+ * "unlock more problems" prompt). Upserts by email so re-submitting the same
+ * address from a different gate/session just updates lastSeenAt instead of
+ * creating duplicates.
+ */
+export async function saveEmailLead(email: string, source: string): Promise<void> {
+  const db = await getDb();
+  const nowStr = new Date().toISOString();
+  await db.collection('emails').updateOne(
+    { email },
+    {
+      $set: { email, source, lastSeenAt: nowStr },
+      $setOnInsert: { createdAt: nowStr },
+    },
+    { upsert: true }
+  );
+}
+
+/**
  * Automatic Promotion Loop: Elevates a user from 'reporter' to 'builder'
  * the exact millisecond they submit their first verified product solution.
  */

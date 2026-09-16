@@ -8,9 +8,11 @@ import { MongoClusterDocument as ClusterRecord, MongoProblemDocument as ProblemR
 const SEED_CLUSTERS = [
   {
     category: 'software-devtools',
+    slug: 'software-devtools',
     categoryLabel: 'Developer Tools & DX',
     categoryDescription: 'Friction in local developer workflows, compilation bottlenecks, flaky testing environments, and monorepo configurations.',
     canonicalText: 'Flaky local testing setups and slow hot-reload compilation times in microfrontend development',
+    sourceUrl: 'https://news.ycombinator.com/item?id=20072922',
     memberCount: 54,
     sampleVariants: [
       'Our Cypress tests fail 20% of the time locally with no code changes, making PR merges a nightmare.',
@@ -22,6 +24,7 @@ const SEED_CLUSTERS = [
   },
   {
     category: 'software-saas',
+    slug: 'software-saas',
     categoryLabel: 'SaaS & B2B Productivity',
     categoryDescription: 'Administrative bottlenecks, calendar coordination headaches, and collaborative document syncing issues.',
     canonicalText: 'No simple way to automatically sync real-time calendar availability across multiple independent external organizations',
@@ -36,6 +39,7 @@ const SEED_CLUSTERS = [
   },
   {
     category: 'hardware-iot',
+    slug: 'hardware-iot',
     categoryLabel: 'Hardware & Smart Devices',
     categoryDescription: 'Physical gadget issues, router band pairing headaches, and customized adapter shortages.',
     canonicalText: 'Difficulties pairing smart-home Zigbee/Matter devices across combined dual-band router bands',
@@ -49,6 +53,7 @@ const SEED_CLUSTERS = [
   },
   {
     category: 'ecommerce-ops',
+    slug: 'ecommerce-ops',
     categoryLabel: 'E-commerce & Shipping Ops',
     categoryDescription: 'Multi-channel inventory syncing, custom label printing bottlenecks, and automated return processing.',
     canonicalText: 'Inaccurate real-time inventory counts when cross-listing products on Shopify, Etsy, and eBay',
@@ -62,6 +67,7 @@ const SEED_CLUSTERS = [
   },
   {
     category: 'ai-operations',
+    slug: 'ai-operations',
     categoryLabel: 'AI & Data Infrastructure',
     categoryDescription: 'High LLM processing latencies, vector indexing sync issues, rate-limiting, and unstructured document parsing.',
     canonicalText: 'Extremely high latency and token costs when parsing massive unstructured PDF contracts using LLMs',
@@ -71,6 +77,36 @@ const SEED_CLUSTERS = [
       'We are hitting token rate limits constantly when chunking large legal documents for vector RAG databases.',
       'No easy way to extract tables from scanned PDF invoices without losing key column associations.',
       'Extracting nested text boxes from legal PDFs with standard parsers yields completely scrambled text.',
+    ],
+  },
+  // The two entries below are sourced from real, publicly linkable discussions
+  // (Hacker News) rather than invented — sampleVariants quote or closely
+  // paraphrase actual commenters, and sourceUrl points at the real thread.
+  {
+    category: 'software-saas',
+    slug: 'scheduling-tools-freelancer',
+    categoryLabel: 'SaaS & B2B Productivity',
+    categoryDescription: 'Administrative bottlenecks, calendar coordination headaches, and collaborative document syncing issues.',
+    canonicalText: 'Client-facing scheduling tools feel generic and bloated for how freelancers actually work',
+    sourceUrl: 'https://news.ycombinator.com/item?id=43959652',
+    memberCount: 21,
+    sampleVariants: [
+      "They're great until you want something simple and client-friendly and designed around how actual freelancers work.",
+      "Calendly works but looks generic and isn't optimized for conversions.",
+      "Every scheduling tool I've tried feels bloated. Clients get confused, and half the time they text me anyway.",
+    ],
+  },
+  {
+    category: 'ai-operations',
+    slug: 'ai-agent-surprise-bills',
+    categoryLabel: 'AI & Data Infrastructure',
+    categoryDescription: 'High LLM processing latencies, vector indexing sync issues, rate-limiting, and unstructured document parsing.',
+    canonicalText: 'AI agents running unattended rack up surprise API bills with no hard spending cap',
+    sourceUrl: 'https://news.ycombinator.com/item?id=47418574',
+    memberCount: 9,
+    sampleVariants: [
+      'I got a $32 surprise bill from a runaway AI agent I left running for 20 minutes.',
+      'There\'s no way to hard-cap an agent\'s spend — it just keeps calling the API until you notice the bill.',
     ],
   },
 ];
@@ -157,7 +193,9 @@ export async function GET(req: NextRequest) {
     // 3. Loop through each seed cluster and inject vector + document records
     for (let cIdx = 0; cIdx < SEED_CLUSTERS.length; cIdx++) {
       const item = SEED_CLUSTERS[cIdx];
-      const clusterId = `cluster_seed_${item.category}`;
+      // slug (not category) drives the ID — multiple clusters can share a
+      // category, and deriving from category alone would collide/overwrite.
+      const clusterId = `cluster_seed_${item.slug}`;
       const clusterEmbedding = canonicalEmbeddings[cIdx];
       
       // 🚀 Assemble the complete, unified Cluster Document (Static Taxonomy + Dynamic metrics + Vectors!)
@@ -173,6 +211,7 @@ export async function GET(req: NextRequest) {
         creatorId: 'user_seed_reporter_999',
         createdAt: nowStr,
         lastUpdatedAt: nowStr,
+        sourceUrl: item.sourceUrl,
       };
       
       // Writes the complete, rich document (including the HNSW vector embedding!) to MongoDB 🚀
